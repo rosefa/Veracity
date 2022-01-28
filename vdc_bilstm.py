@@ -9,8 +9,8 @@ Original file is located at
 
 #importing required libraries
 #!pip install contractions
-#!wget http://nlp.stanford.edu/data/glove.6B.zip
-#!unzip -q glove.6B.zip
+!wget http://nlp.stanford.edu/data/glove.6B.zip
+!unzip -q glove.6B.zip
 import tensorflow as tf
 from sklearn.model_selection import KFold
 import pandas as pd
