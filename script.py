@@ -1,6 +1,5 @@
 #! /bin/bash
 #SBATCH --job-name=my_job1_test    # Job name
-#SBATCH -p publicgpu          # Partition public avec des GPU
 #SBATCH -N 1                  # 1 nœud
 #SBATCH --exclusive           # Le nœud sera entièrement dédié à notre job, pas de partage de ressources
 #SBATCH -t 05:00:00           # Le job sera tué au bout de 5h
