@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 import warnings
 import logging
 import io
-rom zipfile import ZipFile
+from zipfile import ZipFile
 from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
