@@ -1,5 +1,5 @@
 #! /bin/bash
-
+#SBATCH --job-name=my_job1_test    # Job name
 #SBATCH -p publicgpu          # Partition public avec des GPU
 #SBATCH -N 1                  # 1 nœud
 #SBATCH --exclusive           # Le nœud sera entièrement dédié à notre job, pas de partage de ressources
@@ -8,5 +8,7 @@
 #SBATCH --constraint=gpudp    # Nœuds GPU double précision
 #SBATCH --mail-type=END       # Réception d'un mail à la fin du job
 #SBATCH --mail-user=tokparosali@gmail.com
+
+echo "Running plot script on a single GPU core"
 
 ./vdc_bilstm.py
