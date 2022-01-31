@@ -8,9 +8,7 @@ Original file is located at
 """
 
 #importing required libraries
-#!pip install contractions
-wget --no-check-certificate -P http://nlp.stanford.edu/data/glove.6B.zip
-unzip glove.6B.zip
+import wget
 import tensorflow as tf
 from sklearn.model_selection import KFold
 import pandas as pd
@@ -38,12 +36,17 @@ import matplotlib.pyplot as plt
 import warnings
 import logging
 import io
+rom zipfile import ZipFile
 from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('wordnet')
-
+url = 'http://nlp.stanford.edu/data/glove.6B.zip'
+filename = wget.download(url)
+with ZipFile('filename', 'r') as f:
+    f.extractall()
+#unzip filename
 logging.basicConfig(level=logging.INFO)
 #uploaded = files.upload()
 labels=[]
