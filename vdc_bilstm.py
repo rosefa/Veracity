@@ -13,7 +13,7 @@ import tensorflow as tf
 from sklearn.model_selection import KFold
 import pandas as pd
 import numpy as np
-#import nltk
+import nltk
 #import inflect
 import contractions
 from bs4 import BeautifulSoup
