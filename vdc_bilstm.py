@@ -14,6 +14,7 @@ from sklearn.model_selection import KFold
 import pandas as pd
 import numpy as np
 import nltk
+nltk.download('omw-1.4')
 import inflect
 import contractions
 from bs4 import BeautifulSoup
