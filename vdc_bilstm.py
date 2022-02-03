@@ -16,7 +16,7 @@ import numpy as np
 #import nltk
 #import inflect
 import contractions
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 import re, string, unicodedata
 #from nltk import word_tokenize, sent_tokenize
 #from nltk.corpus import stopwords
@@ -37,7 +37,7 @@ import warnings
 import logging
 import io
 from zipfile import ZipFile
-from google.colab import files
+#from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('punkt')
