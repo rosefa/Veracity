@@ -8,7 +8,7 @@ Original file is located at
 """
 
 #importing required libraries
-import wget
+#import wget
 import tensorflow as tf
 from sklearn.model_selection import KFold
 import pandas as pd
@@ -30,7 +30,7 @@ from sklearn.metrics import matthews_corrcoef, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.utils import shuffle
-import numpy as np
+#import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import warnings
