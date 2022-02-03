@@ -42,9 +42,9 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('wordnet')
-wget http://nlp.stanford.edu/data/glove.6B.zip
-#filename = wget.download(url)
-with ZipFile(glove.6B.zip, 'r') as f:
+url= 'http://nlp.stanford.edu/data/glove.6B.zip'
+filename = wget.download(url)
+with ZipFile(filename, 'r') as f:
     f.extractall()
 #unzip filename
 logging.basicConfig(level=logging.INFO)
