@@ -203,9 +203,9 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
 
 def build_bilstm(word_index, embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, dropout=0.5, hidden_layer = 3, lstm_node = 32):
     # Initialize a sequebtial model
-    accuracy = tf.keras.metrics.Accuracy
-    precision = tf.keras.metrics.Precision
-    rappel = tf.keras.metrics.Recall
+    accuracy = tf.keras.metrics.Accuracy(name='accuracy')
+    precision = tf.keras.metrics.Precision(name='precision')
+    rappel = tf.keras.metrics.Recall(name='recall')
     model = Sequential()
     # Make the embedding matrix using the embedding_dict
     embedding_matrix = np.random.random((len(word_index)+1, EMBEDDING_DIM))
@@ -231,7 +231,7 @@ def build_bilstm(word_index, embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300
     model.add(MaxPooling1D(pool_size=2))
     model.add(LSTM(32))
     model.add(Dense(1, activation = 'sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[accuracy,precision, rappel])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
 
@@ -331,11 +331,9 @@ X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X
 #plot_graphs(history, 'loss')
 model = build_bilstm(word_index, embeddings_dict, 1)
 history = model.fit(X_train_Glove, y_train,validation_data=(X_test_Glove,y_test), epochs=10, batch_size=64, verbose=1)
-  #results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
+results = model.evaluate(X_test_Glove, y_test verbose=1)
 
-exactitudeTab.append(history.history[accuracy])
-precisionTab.append(history.history['precision'])
-rappelTab.append(history.history['rappel'])
+exactitudeTab.append(history.history['accuracy'])
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
 
@@ -343,13 +341,13 @@ print(np.mean(exactitudeTab))
 print(np.std(exactitudeTab))
 print(np.var(exactitudeTab))
 
-print(np.mean(precisionTab))
+'''print(np.mean(precisionTab))
 print(np.std(precisionTab))
 print(np.var(precisionTab))
 
 print(np.mean(rappelTab))
 print(np.std(rappelTab))
-print(np.var(rappelTab))
+print(np.var(rappelTab))'''
 
 '''print("\n Evaluating Model ... \n")
 #predicted = model.predict_classes(X_test_Glove)
