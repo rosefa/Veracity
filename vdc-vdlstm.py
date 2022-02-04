@@ -1,16 +1,10 @@
-import keras
-#import textsearch
-#importing required libraries
-#!pip install contractions
-#!wget http://nlp.stanford.edu/data/glove.6B.zip
-#!unzip -q glove.6B.zip
+import wget
 import tensorflow as tf
-from keras.callbacks import LearningRateScheduler
-from keras.utils.vis_utils import plot_model
-import math
 from sklearn.model_selection import KFold
 import pandas as pd
+import numpy as np
 import nltk
+nltk.download('omw-1.4')
 import inflect
 import contractions
 from bs4 import BeautifulSoup
@@ -19,33 +13,33 @@ from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
-from keras.layers import GlobalAveragePooling1D,GlobalMaxPooling1D,Flatten,Concatenate, Dropout, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,BatchNormalization
+from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras import layers
-from keras.layers.merge import concatenate, average, maximum
-from keras.layers import Embedding, Input
-from keras.models import Model
-from keras.layers.core import Dense
 from sklearn.metrics import matthews_corrcoef, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.utils import shuffle
-import numpy as np
+#import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import warnings
 import logging
 import io
+from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
-from google.colab import files
+#from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('wordnet')
-
+url= 'http://nlp.stanford.edu/data/glove.6B.zip'
+filename = wget.download(url)
+with ZipFile(filename, 'r') as f:
+    f.extractall()
+#unzip filename
 logging.basicConfig(level=logging.INFO)
 #uploaded = files.upload()
 labels=[]
