@@ -38,6 +38,8 @@ import warnings
 import logging
 import io
 from zipfile import ZipFile
+from sklearn.model_selection import GridSearchCV
+from keras.wrappers.scikit_learn import KerasClassifier
 #from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -317,22 +319,22 @@ print(histoire)'''
   losses.append(results[0])
   exactitude.append(results[1])
   print(i)'''
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
+'''X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
 X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X_train,X_test)
-'''for train, test in kf.split(X_train_Glove,y_train) :
+for train, test in kf.split(X_train_Glove,y_train) :
   model = build_bilstm(word_index, embeddings_dict, 1)
   history = model.fit(X_train_Glove[train], y_train[train],validation_data=(X_train_Glove[test],y_train[test]), epochs=60, batch_size=64, verbose=0)
   #results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
   #plot_graphs(history, 'accuracy')
   #plot_graphs(history, 'loss')
   #precision.append(resutlts[1])
-  #rappel.append(resutlts[1])'''
+  #rappel.append(resutlts[1])
 #plot_graphs(history, 'accuracy')
 #plot_graphs(history, 'loss')
 model = build_bilstm(word_index, embeddings_dict, 1)
 history = model.fit(X_train_Glove, y_train,validation_data=(X_test_Glove,y_test), epochs=10, batch_size=64, verbose=1)
-results = model.evaluate(X_test_Glove, y_test,verbose=1)
-print(results)
+results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
+#print(results)
 
 exactitudeTab.append(history.history['accuracy'])
 plot_graphs(history, 'accuracy')
@@ -340,7 +342,31 @@ plot_graphs(history, 'loss')
 
 print(np.mean(exactitudeTab))
 print(np.std(exactitudeTab))
-print(np.var(exactitudeTab))
+print(np.var(exactitudeTab))'''
+
+seed = 7
+np.random.seed(seed)
+x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
+myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
+text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+#model = build_bilstm(word_index, embeddings_dict, 1)
+#model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
+model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=10, batch_size=64,verbose=0)
+# define the grid search parameters
+#batch_size = [10, 20, 40, 60, 80, 100,150]
+#epochs = [10,50]
+#optimizer = ['sgd', 'rmsprop','adam']
+#optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
+param_grid = dict(optimizer=optimizer, batch_size=batch_size, epochs=epochs)
+#param_grid = dict(batch_size=batch_size, epochs=epochs)
+grid = GridSearchCV(estimator=model, n_jobs=-1, cv=5)
+grid_result = grid.fit(text, mylabels)
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+    print("%f (%f) with: %r" % (mean, stdev, param))
 
 '''print(np.mean(precisionTab))
 print(np.std(precisionTab))
