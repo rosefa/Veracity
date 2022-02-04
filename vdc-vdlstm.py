@@ -50,24 +50,7 @@ labels=data.loc[:,'labels']
 #print('data1 ok')
 #data2 = pd.read_csv('True.csv',usecols= ['text'] )
 #print('data2 ok')
-'''i=0
-j=0
-labels2=[]
-while i<len(data1):
-  labels2.append(0)
-  i=i+1
-while j<len(data2):
-  labels2.append(1)
-  j=j+1
-data = pd.concat([data1['text'], data2['text']])
-myData2=data'''
 
-'''print(len(data))
-print(len(labels))'''
-
-'''titre= data.loc[:,'article_title']
-myData=data.loc[:,'article_content']
-mylabels=data.loc[:,'labels']'''
 # First function is used to denoise text
 def denoise_text(text):
     # Strip html if any. For ex. removing <html>, <p> tags
@@ -194,23 +177,7 @@ def build_bilstm(word_index, embeddings_dict, optimizer='adam', MAX_SEQUENCE_LEN
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)       
 
-    # Add hidden layers 
-    '''model.add(Conv1D(64, 5, activation="relu"))
-    model.add(Conv1D(64, 5, activation="relu"))
-    #model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Conv1D(128, 3, activation="relu"))
-    model.add(Conv1D(128, 3, activation="relu"))
-    #model.add(BatchNormalization())
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(Conv1D(256, 1, activation="relu"))
-    model.add(Conv1D(256, 1, activation="relu"))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(LSTM(32))
-    model.add(Dropout(0.5))
-    model.add(Dense(1, activation = 'sigmoid'))'''
     model1=Conv1D(128, 5, activation="relu")(embedding_layer)
-    model1 = BatchNormalization()(model1)
     #model1= MaxPooling1D(2)(model1)
     model1= Conv1D(128, 5, activation="relu")(model1)
     model1 = BatchNormalization()(model1)
@@ -228,13 +195,14 @@ def build_bilstm(word_index, embeddings_dict, optimizer='adam', MAX_SEQUENCE_LEN
     model2= Dense(256,activation='relu')(model2)
   
     
-    model3 = layers.maximum([model1,model2])
+    #model3 = layers.maximum([model1,model2])
+    model3 = layers.concatenate([model1,model2])
     model3 = Dense(512, activation='relu')(model3)
     #model3 = Dropout(0.5)(model3)
     model3 = Dense(1, activation='sigmoid')(model3)
 
     model = keras.Model(inputs=input,outputs=model3)
-    plot_model(model, "VDC-BILSTM.png", show_shapes=True)
+    #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
     return model
@@ -305,8 +273,8 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 # define the grid search parameters
 #batch_size = [10, 20, 40, 60, 80, 100,150]
 #epochs = [10,50]
-#optimizer = ['sgd', 'rmsprop','adam']
-optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
+optimizer = ['sgd', 'rmsprop','adam']
+#optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
 param_grid = dict(optimizer=optimizer)
 #param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
