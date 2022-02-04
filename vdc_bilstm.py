@@ -357,7 +357,7 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 #epochs = [10,50]
 #optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(optimizer=optimizer, batch_size=batch_size, epochs=epochs)
+#param_grid = dict(optimizer=optimizer, batch_size=batch_size, epochs=epochs)
 #param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
