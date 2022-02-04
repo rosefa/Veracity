@@ -203,7 +203,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, dropout=0.5, hidden_layer = 3, lstm_node = 32):
+def build_bilstm(word_index,optimizer='adam', embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, dropout=0.5, hidden_layer = 3, lstm_node = 32):
     # Initialize a sequebtial model
     accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
@@ -233,7 +233,7 @@ def build_bilstm(word_index, embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300
     model.add(MaxPooling1D(pool_size=2))
     model.add(LSTM(32))
     model.add(Dense(1, activation = 'sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     return model
 
 
@@ -355,11 +355,11 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 # define the grid search parameters
 #batch_size = [10, 20, 40, 60, 80, 100,150]
 #epochs = [10,50]
-#optimizer = ['sgd', 'rmsprop','adam']
+optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-#param_grid = dict(optimizer=optimizer, batch_size=batch_size, epochs=epochs)
+param_grid = dict(optimizer=optimizer)
 #param_grid = dict(batch_size=batch_size, epochs=epochs)
-grid = GridSearchCV(estimator=model, n_jobs=-1, cv=5)
+grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 means = grid_result.cv_results_['mean_test_score']
