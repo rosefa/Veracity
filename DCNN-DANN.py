@@ -197,7 +197,7 @@ def build_bilstm(word_index, embeddings_dict, optimizer='adam', MAX_SEQUENCE_LEN
     model2 = Dropout(rate=0.5)(model2)
     model3 = Dense(units=64, kernel_initializer='glorot_uniform', activation='relu')(model2)
     model2= Dense(256,activation='relu')(model2)
-    model2 = Dropout(rate=0.5)(model2)
+    #model2 = Dropout(rate=0.5)(model2)
     model3 = layers.concatenate([model1,model2])
     model3 = Dense(512, activation='relu')(model3)
     #model3 = Dropout(0.5)(model3)
