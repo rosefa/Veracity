@@ -203,7 +203,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index,optimizer='adam', embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, dropout=0.5, hidden_layer = 3, lstm_node = 32):
+def build_bilstm(word_index,optimizer='adam', embeddings_dict, nclasses,  MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
     # Initialize a sequebtial model
     accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
@@ -351,7 +351,7 @@ myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_mode
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 #model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=10, batch_size=64,verbose=0)
+model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=10, batch_size=64,verbose=0)
 # define the grid search parameters
 #batch_size = [10, 20, 40, 60, 80, 100,150]
 #epochs = [10,50]
