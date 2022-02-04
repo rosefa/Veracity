@@ -331,7 +331,8 @@ X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X
 #plot_graphs(history, 'loss')
 model = build_bilstm(word_index, embeddings_dict, 1)
 history = model.fit(X_train_Glove, y_train,validation_data=(X_test_Glove,y_test), epochs=10, batch_size=64, verbose=1)
-results = model.evaluate(X_test_Glove, y_test verbose=1)
+results = model.evaluate(X_test_Glove, y_test,verbose=1)
+print(results)
 
 exactitudeTab.append(history.history['accuracy'])
 plot_graphs(history, 'accuracy')
