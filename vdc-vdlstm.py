@@ -177,7 +177,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
     #return (text, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,init_mode='uniform'):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,activation='sigmoid'):
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
@@ -187,27 +187,27 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)       
 
-    model1=Conv1D(128, 5,kernel_initializer=init_mode, activation="relu")(embedding_layer)
-    model1= Conv1D(128, 5,kernel_initializer=init_mode, activation="relu")(model1)
+    model1=Conv1D(128, 5,activation="relu")(embedding_layer)
+    model1= Conv1D(128, 5,activation="relu")(model1)
     model1 = BatchNormalization()(model1)
-    model1= Conv1D(256,5,kernel_initializer=init_mode,activation='relu')(model1)
+    model1= Conv1D(256,5,activation='relu')(model1)
     model1 = BatchNormalization()(model1)
     model1= GlobalMaxPooling1D()(model1)
     #model1= Dropout(0.5)(model1)
-    model1= Dense(256,kernel_initializer=init_mode,activation='relu')(model1)
+    model1= Dense(256,activation='relu')(model1)
     #model1= Dropout(0.5)(model1)
 
-    model2 = Bidirectional(LSTM(128,kernel_initializer=init_mode))(embedding_layer)
+    model2 = Bidirectional(LSTM(128))(embedding_layer)
     model2 = Dropout(0.2)(model2)
     #model2 = Flatten()(model2)
-    model2= Dense(256,kernel_initializer=init_mode,activation='relu')(model2)
+    model2= Dense(256,activation='relu')(model2)
 
     
     #model3 = layers.maximum([model1,model2])
     model3 = layers.concatenate([model1,model2])
-    model3 = Dense(512,kernel_initializer=init_mode, activation='relu')(model3)
+    model3 = Dense(512, activation='relu')(model3)
     #model3 = Dropout(0.5)(model3)
-    model3 = Dense(1, kernel_initializer=init_mode,activation='sigmoid')(model3)
+    model3 = Dense(1,activation=activation)(model3)
 
     model = keras.Model(inputs=input,outputs=model3)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
@@ -283,14 +283,14 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 #epochs = [10,50]
 #learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
 #momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
-init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
-#activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
+#init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
+activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
 #weight_constraint = [1, 2, 3, 4, 5]
 #dropout_rate = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
 #param_grid = dict(optimizer=optimizer)
-param_grid = dict(init_mode=init_mode)
+param_grid = dict(activation=activation)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
