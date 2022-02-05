@@ -178,7 +178,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #return (text, word_index, embeddings_dict)
 
 def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,init_mode='uniform'):
-    optimizer = tf.keras.optimizers.Adam(lr=0.3)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
     for word, i in word_index.items():
@@ -197,7 +197,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1= Dense(256,kernel_initializer=init_mode,activation='relu')(model1)
     #model1= Dropout(0.5)(model1)
 
-    model2 = Bidirectional(LSTM(128),kernel_initializer=init_mode)(embedding_layer)
+    model2 = Bidirectional(LSTM(128,kernel_initializer=init_mode))(embedding_layer)
     model2 = Dropout(0.2)(model2)
     #model2 = Flatten()(model2)
     model2= Dense(256,kernel_initializer=init_mode,activation='relu')(model2)
@@ -207,7 +207,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model3 = layers.concatenate([model1,model2])
     model3 = Dense(512,kernel_initializer=init_mode, activation='relu')(model3)
     #model3 = Dropout(0.5)(model3)
-    model3 = Dense(1, activation='sigmoid')(model3)
+    model3 = Dense(1, kernel_initializer=init_mode,activation='sigmoid')(model3)
 
     model = keras.Model(inputs=input,outputs=model3)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
