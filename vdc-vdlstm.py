@@ -38,6 +38,7 @@ import io
 from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
+from keras.optimizers import Adam
 #from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -176,7 +177,8 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
     #return (text, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, optimizer='adam', MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, dropout=0.5, hidden_layer = 3, lstm_node = 32):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, learn_rate=0.01, momentum=0):
+    optimizer = Adam(lr=learn_rate, momentum=momentum)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
     for word, i in word_index.items():
@@ -279,10 +281,16 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 # define the grid search parameters
 #batch_size = [10, 20, 40, 60, 80, 100,150]
 #epochs = [10,50]
-optimizer = ['sgd', 'rmsprop','adam']
+learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
+momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
+#init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
+#activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
+#weight_constraint = [1, 2, 3, 4, 5]
+#dropout_rate = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+#optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(optimizer=optimizer)
-#param_grid = dict(batch_size=batch_size, epochs=epochs)
+#param_grid = dict(optimizer=optimizer)
+param_grid = dict(learn_rate=learn_rate, momentum=momentum)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
