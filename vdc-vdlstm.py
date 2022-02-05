@@ -223,7 +223,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1= Dense(256,activation='relu')(model1)
     #model1= Dropout(0.5)(model1)
 
-    model2 = Bidirectional(LSTM(64, return_sequences=True))(embedding_layer)
+    model2 = Bidirectional(LSTM(128, return_sequences=True))(embedding_layer)
     model2 = attention()(model2)            
     model2 = Dropout(0.5)(model2)
     #model2 = Flatten()(model2)
@@ -301,10 +301,10 @@ seed = 7
 np.random.seed(seed)
 x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
-text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
-#model = build_bilstm(word_index, embeddings_dict, 1)
+#text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+model = build_bilstm(word_index, embeddings_dict)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=50, batch_size=10,verbose=0)
+#model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=50, batch_size=10,verbose=0)
 # define the grid search parameters
 #batch_size = [10, 20, 40, 60, 80, 100,150]
 #epochs = [10,50]
@@ -312,30 +312,29 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 #momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
 #init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
 #activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
-activation = ['sigmoid']
+#activation = ['sigmoid']
 #weight_constraint = [1, 2, 3, 4, 5]
 #dropout_rate = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
 #param_grid = dict(optimizer=optimizer)
-param_grid = dict(activation=activation)
-grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
-grid_result = grid.fit(text, mylabels)
+#param_grid = dict(activation=activation)
+#grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
+'''grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 means = grid_result.cv_results_['mean_test_score']
 stds = grid_result.cv_results_['std_test_score']
 params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))
-'''history = model.fit(myData_train_Glove, y_train,validation_split=0.1, epochs=60, batch_size=150, verbose=2)
-
+    print("%f (%f) with: %r" % (mean, stdev, param))'''
+history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=50, batch_size=10, verbose=2)
 resultsTrain = model.evaluate(myData_train_Glove, y_train,verbose=0)
 results = model.evaluate(myData_test_Glove, y_test,verbose=0)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
 print(results[1],resultsTrain[1])
 print(results[2],resultsTrain[2])
-print(results[3],resultsTrain[3])'''
+print(results[3],resultsTrain[3])
 '''for train, test in kf.split(myData_train_Glove,mylabels) :
   model = build_bilstm(word_index, embeddings_dict, 1)
   history = model.fit(myData_train_Glove[train], mylabels[train],validation_data=(myData_train_Glove[test],mylabels[test]), epochs=10, batch_size=64, verbose=1)
