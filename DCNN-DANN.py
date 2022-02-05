@@ -195,9 +195,9 @@ def build_bilstm(word_index, embeddings_dict, optimizer='adam', MAX_SEQUENCE_LEN
   
     model2=Conv1D(128, 5, activation="relu")(embedding_layer)
     model2= MaxPooling1D(2)(model2)
-    model2 = Lstm(128,return_sequences=True)(model2)
-    model2 = Lstm(64)(model2)
-    model2 = Dropout(rate=0.5)(model2)
+    model2 = LSTM(128,return_sequences=True)(model2)
+    model2 = LSTM(64)(model2)
+    model2 = Dropout(0.5)(model2)
     model2= Dense(256,activation='relu')(model2)
     
    
