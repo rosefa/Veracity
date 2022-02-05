@@ -38,12 +38,38 @@ import io
 from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
-
+from keras import backend as K
 #from google.colab import files
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('wordnet')
+
+class attention(Layer):
+    def __init__(self,**kwargs):
+        super(attention,self).__init__(**kwargs)
+ 
+    def build(self,input_shape):
+        self.W=self.add_weight(name='attention_weight', shape=(input_shape[-1],1), 
+                               initializer='random_normal', trainable=True)
+        self.b=self.add_weight(name='attention_bias', shape=(input_shape[1],1), 
+                               initializer='zeros', trainable=True)        
+        super(attention, self).build(input_shape)
+ 
+    def call(self,x):
+        # Alignment scores. Pass them through tanh function
+        e = K.tanh(K.dot(x,self.W)+self.b)
+        # Remove dimension of size 1
+        e = K.squeeze(e, axis=-1)   
+        # Compute the weights
+        alpha = K.softmax(e)
+        # Reshape to tensorFlow format
+        alpha = K.expand_dims(alpha, axis=-1)
+        # Compute the context vector
+        context = x * alpha
+        context = K.sum(context, axis=1)
+        return context
+
 url= 'http://nlp.stanford.edu/data/glove.6B.zip'
 filename = wget.download(url)
 with ZipFile(filename, 'r') as f:
@@ -177,7 +203,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
     #return (text, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,activation='sigmoid'):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
@@ -197,8 +223,9 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1= Dense(256,activation='relu')(model1)
     #model1= Dropout(0.5)(model1)
 
-    model2 = Bidirectional(LSTM(128))(embedding_layer)
-    model2 = Dropout(0.2)(model2)
+    model2 = Bidirectional(LSTM(64, return_sequences=True))(embedding_layer)
+    model2 = attention()(model2)            
+    model2 = Dropout(0.5)(model2)
     #model2 = Flatten()(model2)
     model2= Dense(256,activation='relu')(model2)
 
@@ -207,7 +234,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model3 = layers.concatenate([model1,model2])
     model3 = Dense(512, activation='relu')(model3)
     #model3 = Dropout(0.5)(model3)
-    model3 = Dense(1,activation=activation)(model3)
+    model3 = Dense(1,activation='sigmoid')(model3)
 
     model = keras.Model(inputs=input,outputs=model3)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
@@ -284,7 +311,8 @@ model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=emb
 #learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
 #momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
 #init_mode = ['uniform', 'lecun_uniform', 'normal', 'zero', 'glorot_normal', 'glorot_uniform', 'he_normal', 'he_uniform']
-activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
+#activation = ['softmax', 'softplus', 'softsign', 'relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'linear']
+activation = ['sigmoid']
 #weight_constraint = [1, 2, 3, 4, 5]
 #dropout_rate = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #optimizer = ['sgd', 'rmsprop','adam']
