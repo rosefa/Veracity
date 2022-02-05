@@ -177,8 +177,8 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
     #return (text, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, learn_rate=0.01, momentum=0):
-    optimizer = tf.keras.optimizers.Adam(lr=learn_rate, momentum=momentum)
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100, learn_rate=0.01):
+    optimizer = tf.keras.optimizers.Adam(lr=learn_rate)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
     for word, i in word_index.items():
@@ -290,7 +290,7 @@ momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
 #optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
 #param_grid = dict(optimizer=optimizer)
-param_grid = dict(learn_rate=learn_rate, momentum=momentum)
+param_grid = dict(learn_rate=learn_rate)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
