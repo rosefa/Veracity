@@ -204,7 +204,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #return (text, word_index, embeddings_dict)
 
 def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
@@ -226,8 +226,8 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1 = BatchNormalization()(model1)
     model1 =MaxPooling1D(2)(model1)
     #model1= GlobalMaxPooling1D()(model1)
-    model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2))(model1)
-    model1 = Dense(128, activation='relu')(model1)
+    model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2))(model1)
+    #model1 = Dense(128, activation='relu')(model1)
     #model1 = Dropout(0.5)(model1)
     model1 = Dense(1,activation='sigmoid')(model1)
     
