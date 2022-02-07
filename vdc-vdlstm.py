@@ -237,7 +237,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model5 =Conv1D(128, 5,activation="relu")(embedding_layer)
     model5 =MaxPooling1D(2)(model5)
 
-    model6 = Bidirectional(LSTM(128))(embedding_layer)
+    model6 = Bidirectional(LSTM(64))(embedding_layer)
     #model2 = attention()(model2)            
     #model2 = Dropout(0.5)(model2)
     #model2 = Flatten()(model2)
@@ -247,11 +247,11 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     #model3 = layers.maximum([model1,model2])
     model7 = layers.concatenate([model1,model2,model3,model4,model5])
     model8 = layers.concatenate([model7,model6])
-    model3 = Dense(1024, activation='relu')(model3)
-    model3 = Dropout(0.5)(model3)
-    model3 = Dense(1,activation='sigmoid')(model3)
+    model9 = Dense(1024, activation='relu')(model8)
+    model9 = Dropout(0.5)(model9)
+    model9 = Dense(1,activation='sigmoid')(model9)
 
-    model = keras.Model(inputs=input,outputs=model3)
+    model = keras.Model(inputs=input,outputs=model9)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
