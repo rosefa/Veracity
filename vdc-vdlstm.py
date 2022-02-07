@@ -19,7 +19,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras import layers
-from keras.layers.merge import concatenate, average, maximum, sums
+from keras.layers.merge import concatenate, average, maximum
 from keras.layers import Embedding, Input, Layer
 from keras.models import Model
 from keras.layers.core import Dense
