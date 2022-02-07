@@ -19,7 +19,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
 from keras import layers
-from keras.layers.merge import concatenate, average, maximum
+from keras.layers.merge import concatenate, average, maximum, sums
 from keras.layers import Embedding, Input, Layer
 from keras.models import Model
 from keras.layers.core import Dense
@@ -214,18 +214,20 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)       
 
     model1=Conv1D(128, 5,activation="relu")(embedding_layer)
+    model1 = BatchNormalization()(model1)
     model1 =MaxPooling1D(2)(model1)
-    '''model1= Conv1D(128, 5,activation="relu")(model1)
-    #model1 = BatchNormalization()(model1)
+    model1= Conv1D(128, 5,activation="relu")(model1)
+    model1 = BatchNormalization()(model1)
     model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(256,5,activation='relu')(model1)
-    #model1 = BatchNormalization()(model1)
+    model1= Conv1D(128,5,activation='relu')(model1)
+    model1 = BatchNormalization()(model1)
     model1= MaxPooling1D(2)(model1)
-    #model1= Dropout(0.5)(model1)
-    #model1= Dense(256,activation='relu')(model1)
-    #model1= Dropout(0.5)(model1)'''
+    model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2))(model1)
+    model1 = Dropout(0.5)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
     
-    model2 =Conv1D(128, 5,activation="relu")(embedding_layer)
+    
+    '''model2 =Conv1D(128, 5,activation="relu")(embedding_layer)
     model2 = BatchNormalization()(model2)
     model2 =MaxPooling1D(2)(model2)
     
@@ -257,9 +259,9 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     #model9 = Dense(1024, activation='relu')(model8)
     model7 = Dense(256, activation='relu')(model7)
     model7 = Dropout(0.5)(model7)
-    model7 = Dense(1,activation='sigmoid')(model7)
+    model7 = Dense(1,activation='sigmoid')(model7)'''
 
-    model = keras.Model(inputs=input,outputs=model7)
+    model = keras.Model(inputs=input,outputs=model1)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
