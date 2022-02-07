@@ -233,11 +233,11 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model3 = BatchNormalization()(model3)
     model3 =MaxPooling1D(2)(model3)
     
-    model4 =Conv1D(128, 3,activation="relu")(embedding_layer)
+    model4 =Conv1D(128, 5,activation="relu")(embedding_layer)
     model4 = BatchNormalization()(model4)
     model4 =MaxPooling1D(2)(model4)
     
-    model5 =Conv1D(128, 3,activation="relu")(embedding_layer)
+    model5 =Conv1D(128, 5,activation="relu")(embedding_layer)
     model5 = BatchNormalization()(model5)
     model5 =MaxPooling1D(2)(model5)
 
@@ -249,9 +249,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
     
     #model3 = layers.maximum([model1,model2])
-    '''model7 = layers.maximum([model1,model2])
-    model7 = layers.maximum([model7,model3])
-    model7 = layers.maximum([model7,model4])'''
+ 
     model7 = layers.average([model1,model2,model3,model4,model5])
     model7 = BatchNormalization()(model7)
     model7 = GlobalMaxPooling1D()(model7)
