@@ -214,10 +214,16 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)       
 
-    model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2,return_sequences=True))(embedding_layer)
-    model1=Conv1D(128, 5,activation="relu")(model1)
-    model1 = BatchNormalization()(model1)
+    #model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2,return_sequences=True))(embedding_layer)
+    model1=Conv1D(128, 5,activation="relu")(embedding_layer)
+   # model1 = BatchNormalization()(model1)
     model1 =MaxPooling1D(2)(model1)
+    model1=Conv1D(128, 5,activation="relu")(model1)
+    #model1 = BatchNormalization()(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2))(model1)
+    model1 = Dropout(0.5)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
     '''model1 = LSTM(128,return_sequences=True)(model1)
     model1=Conv1D(128, 5,activation="relu")(model1)
     model1 = BatchNormalization()(model1)
@@ -233,7 +239,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1 = Dropout(0.5)(model1)
     model1 = Dense(128, activation='relu')(model1)
     model1 = Dropout(0.5)(model1)'''
-    model1 = Dense(1,activation='sigmoid')(model1)
+    #model1 = Dense(1,activation='sigmoid')(model1)
     
     
     '''model2 =Conv1D(128, 5,activation="relu")(embedding_layer)
@@ -361,7 +367,7 @@ stds = grid_result.cv_results_['std_test_score']
 params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
-history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=20, batch_size=100, verbose=2)
+history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=10, batch_size=150, verbose=2)
 resultsTrain = model.evaluate(myData_train_Glove, y_train,verbose=0)
 results = model.evaluate(myData_test_Glove, y_test,verbose=0)
 plot_graphs(history, 'accuracy')
