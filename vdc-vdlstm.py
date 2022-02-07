@@ -204,7 +204,8 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #return (text, word_index, embeddings_dict)
 
 def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
     for word, i in word_index.items():
