@@ -229,10 +229,10 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model1 = BatchNormalization()(model1)
     model1= MaxPooling1D(2)(model1)'''
     '''model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2))(model1)'''
-    model1 = Dense(128, activation='relu')(model1)
+    '''model1 = Dense(128, activation='relu')(model1)
     model1 = Dropout(0.5)(model1)
     model1 = Dense(128, activation='relu')(model1)
-    model1 = Dropout(0.5)(model1)
+    model1 = Dropout(0.5)(model1)'''
     model1 = Dense(1,activation='sigmoid')(model1)
     
     
