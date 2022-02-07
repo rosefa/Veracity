@@ -249,10 +249,10 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
     
     #model3 = layers.maximum([model1,model2])
-    model7 = layers..maximum([model1,model2])
-    model7 = layers..maximum([model7,model3])
-    model7 = layers..maximum([model7,model4])
-    model7 = layers..maximum([model7,model5])
+    model7 = layers.maximum([model1,model2])
+    model7 = layers.maximum([model7,model3])
+    model7 = layers.maximum([model7,model4])
+    model7 = layers.maximum([model7,model5])
     model7 = BatchNormalization()(model7)
     model7 = GlobalMaxPooling1D()(model7)
     model7 = layers.concatenate([model7,model6])
