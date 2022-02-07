@@ -241,7 +241,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model5 = BatchNormalization()(model5)
     model5 =MaxPooling1D(2)(model5)
 
-    model6 = Bidirectional(LSTM(64,recurrente_dropout=0.2))(embedding_layer)
+    model6 = Bidirectional(LSTM(64,recurrent_dropout=0.2))(embedding_layer)
     #model2 = attention()(model2)            
     #model2 = Dropout(0.5)(model2)
     #model2 = Flatten()(model2)
