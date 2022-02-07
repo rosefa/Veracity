@@ -226,18 +226,22 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     #model1= Dropout(0.5)(model1)'''
     
     model2 =Conv1D(128, 5,activation="relu")(embedding_layer)
+    model2 = BatchNormalization()(model2)
     model2 =MaxPooling1D(2)(model2)
     
     model3 =Conv1D(128, 5,activation="relu")(embedding_layer)
+    model3 = BatchNormalization()(model3)
     model3 =MaxPooling1D(2)(model3)
     
-    model4 =Conv1D(128, 5,activation="relu")(embedding_layer)
+    model4 =Conv1D(128, 3,activation="relu")(embedding_layer)
+    model4 = BatchNormalization()(model4)
     model4 =MaxPooling1D(2)(model4)
     
-    model5 =Conv1D(128, 5,activation="relu")(embedding_layer)
+    model5 =Conv1D(128, 3,activation="relu")(embedding_layer)
+    model5 = BatchNormalization()(model5)
     model5 =MaxPooling1D(2)(model5)
 
-    model6 = Bidirectional(LSTM(64))(embedding_layer)
+    model6 = Bidirectional(LSTM(64,recurrente_dropout=0.2))(embedding_layer)
     #model2 = attention()(model2)            
     #model2 = Dropout(0.5)(model2)
     #model2 = Flatten()(model2)
@@ -245,10 +249,10 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
     
     #model3 = layers.maximum([model1,model2])
-    model7 = layers.maximum([model1,model2,model3,model4,model5])
+    model7 = layers.concatenate([model1,model2,model3,model4,model5])
     model7 = GlobalMaxPooling1D()(model7)
     model8 = layers.concatenate([model7,model6])
-    model9 = Dense(1024, activation='relu')(model8)
+    #model9 = Dense(1024, activation='relu')(model8)
     model9 = Dense(256, activation='relu')(model9)
     model9 = Dropout(0.5)(model9)
     model9 = Dense(1,activation='sigmoid')(model9)
