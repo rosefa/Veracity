@@ -245,10 +245,11 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
     
     #model3 = layers.maximum([model1,model2])
-    model7 = layers.concatenate([model1,model2,model3,model4,model5])
+    model7 = layers.maximum([model1,model2,model3,model4,model5])
     model7 = GlobalMaxPooling1D()(model7)
     model8 = layers.concatenate([model7,model6])
     model9 = Dense(1024, activation='relu')(model8)
+    model9 = Dense(256, activation='relu')(model9)
     model9 = Dropout(0.5)(model9)
     model9 = Dense(1,activation='sigmoid')(model9)
 
