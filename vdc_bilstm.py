@@ -377,7 +377,7 @@ for train, test in kf.split(text,mylabels) :
   model = build_bilstm(word_index, embeddings_dict, 1)
   model2 = build_bilstm2(word_index, embeddings_dict, 1)
   history = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
-  history2 = model2.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=, batch_size=)
+  history2 = model2.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
   #results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
   plot_graphs(history, history2,'accuracy')
   plot_graphs(history,history2, 'loss')
