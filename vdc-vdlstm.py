@@ -344,6 +344,7 @@ np.random.seed(seed)
 x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+mylabels = np.concatenate((y_train, y_test), axis=0)
 model = build_bilstm(word_index, embeddings_dict)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
@@ -360,7 +361,7 @@ epochs = [50,65,70]
 #optimizer = ['sgd', 'rmsprop','adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
 #param_grid = dict(optimizer=optimizer)
-param_grid = dict(batch_size=batch_size,epochs=epochs)
+'''param_grid = dict(batch_size=batch_size,epochs=epochs)
 grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
@@ -368,7 +369,7 @@ means = grid_result.cv_results_['mean_test_score']
 stds = grid_result.cv_results_['std_test_score']
 params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))
+    print("%f (%f) with: %r" % (mean, stdev, param))'''
 '''history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=10, batch_size=100, verbose=2)
 resultsTrain = model.evaluate(myData_train_Glove, y_train,verbose=0)
 results = model.evaluate(myData_test_Glove, y_test,verbose=0)
@@ -377,7 +378,7 @@ plot_graphs(history, 'loss')
 print(results[1],resultsTrain[1])
 print(results[2],resultsTrain[2])
 print(results[3],resultsTrain[3])'''
-'''for train, test in kf.split(myData_train_Glove,mylabels) :
+for train, test in kf.split(text,mylabels) :
   model = build_bilstm(word_index, embeddings_dict, 1)
   history = model.fit(myData_train_Glove[train], mylabels[train],validation_data=(myData_train_Glove[test],mylabels[test]), epochs=10, batch_size=64, verbose=1)
   results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
@@ -400,7 +401,7 @@ print(meanExa)
 print(np.std(precisionTab))
 print(meanRap)
 print(np.std(rappelTab))
-print(2*(meanExa*meanRap)/(meanExa+meanRap))'''
+print(2*(meanExa*meanRap)/(meanExa+meanRap))
 
 
 
