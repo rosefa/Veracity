@@ -236,7 +236,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
+def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
     # Initialize a sequebtial model
     '''accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
@@ -261,7 +261,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
                                 weights=[embedding_matrix],
                                 input_length=MAX_SEQUENCE_LENGTH,
                                 trainable=True))'''
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.1)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
@@ -273,16 +273,80 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     # Add hidden layers 
     model1=Conv1D(128, 5,activation='relu')(embedding_layer)
     model1 =MaxPooling1D(2)(model1)
-    model1 = Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
+    model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
     model1 = Dense(1,activation='sigmoid')(model1)
     model = keras.Model(inputs=input,outputs=model1)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
 
+def cnn-lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
+    # Add hidden layers 
+    model1=Conv1D(128, 5,activation='relu')(embedding_layer)
+    model1 =MaxPooling1D(2)(model1)
+    model1 = LSTM(32)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
+    model = keras.Model(inputs=input,outputs=model1)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    return model
 
-def build_bilstm2(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.1)
+def dlstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
+    # Add hidden layers 
+    model1 = LSTM(128,return_sequences=True)(embedding_layer)
+    model1 = Dropout(0.2)(model1)
+    model1 = LSTM(128)(model1)
+    model1 = Dense(256,activation='relu')(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
+    model = keras.Model(inputs=input,outputs=model1)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    return model
+def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
+    # Add hidden layers 
+    model1 = Dense(1024,activation='relu')(embedding_layer)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(256,activation='relu')(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(128,activation='relu')(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(64,activation='relu')(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(32,activation='relu')(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
+    model = keras.Model(inputs=input,outputs=model1)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    return model
+
+def vdc-lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
@@ -311,8 +375,9 @@ def build_bilstm2(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDIN
     model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
     #model1= GlobalMaxPooling1D()(model1)
-    model1 = LSTM(128,return_sequences=True)(model1)
-    model1 = LSTM(128)(model1)
+    model1 = LSTM(64,return_sequences=True)(model1)
+    model1 = Dropout(0.2)(model1)
+    model1 = LSTM(64)(model1)
     model1 = Dense(1,activation='sigmoid')(model1)
     model = keras.Model(inputs=input,outputs=model1)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
@@ -340,20 +405,21 @@ def get_eval_report(labels, preds):
 def compute_metrics(labels, preds):
     #assert len(preds) == len(labels)
     return get_eval_report(labels, preds)
-def plot_graphs(history,history2, string):
-  plt.plot(history.history[string],'r--',history2.history[string],'b--')
+def plot_graphs(history1,history2,history3,history4,history5, string):
+  plt.plot(history1.history[string],'r-',history2.history[string],'b-',history3.history[string],'o-',history4.history[string],'g-',history5.history[string],'k-')
   #plt.plot(history.history['val_'+string], 'r--',history2.history['val_'+string],'r-')
   plt.xlabel("Epochs")
   plt.ylabel(string)
-  #plt.legend([string])
+  plt.legend(['CNN-BILSTM','CNN-LSTM','VDC-LSTM','DANN','DLSTM'])
   plt.show()
 
-def plot_graphs2(history,history2, string):
-  #plt.plot(history.history[string],'b--',history2.history[string],'b-')
-  plt.plot(history.history['val_'+string], 'r-',history2.history['val_'+string],'b-')
+def plot_graphs2(history1,history2,history3,history4,history5, string):
+  #plt.plot(history.history[string],'b--',history2.history[string],'b-',history3.history[string],'b-',history4.history[string],'b-',history5.history[string],'b-')
+  plt.plot(history1.history[string], 'r-',history2.history[string],'b-',history3.history[string],'o-',history4.history[string],'g-',history5.history[string],'k-')
   plt.xlabel("Epochs")
   plt.ylabel(string)
   #plt.legend([string, 'val_'+string])
+  plt.legend(['CNN-BILSTM','CNN-LSTM','VDC-LSTM','DANN','DLSTM'])
   plt.show()
 
 X = myData
@@ -394,24 +460,47 @@ for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
 kf = KFold(n_splits=5)
 for train, test in kf.split(text,mylabels) :
-  model = build_bilstm(word_index, embeddings_dict)
+  model = cnn_bilstm(word_index, embeddings_dict)
   history1 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
   results1 = model.evaluate(text[test],mylabels[test],verbose=0)
-  model = build_bilstm2(word_index, embeddings_dict)
+  model = cnn_lstm(word_index, embeddings_dict)
   history2 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64,verbose=0)
   results2 = model.evaluate(text[test],mylabels[test],verbose=0)
-  plot_graphs(history1, history2,'accuracy')
-  plot_graphs2(history1, history2,'accuracy')
-  plot_graphs(history1,history2, 'loss')
+  model = vdc_lstm(word_index, embeddings_dict)
+  history3 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  results3 = model.evaluate(text[test],mylabels[test],verbose=0)
+  model = dann(word_index, embeddings_dict)
+  history4 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  results4 = model.evaluate(text[test],mylabels[test],verbose=0)
+  model = dlstm(word_index, embeddings_dict)
+  history5 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  results5 = model.evaluate(text[test],mylabels[test],verbose=0)
+  plot_graphs(history1, history2,history3,history4,history5,'accuracy')
+  plot_graphs2(history1, history2,history3,history4,history5,'val_accuracy')
+  plot_graphs(history1,history2,history3,history4,history5, 'loss')
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
   #rappelTab.append(results[3])
+  print('cnn_bilstm')
   print(results1[1])
   print(results1[2])
   print(results1[3])
+  print('cnn_lstm')
   print(results2[1])
   print(results2[2])
   print(results2[3])
+  print('vdc_lstm')
+  print(results3[1])
+  print(results3[2])
+  print(results3[3])
+  print('dann')
+  print(results4[1])
+  print(results4[2])
+  print(results4[3])
+  print('dlstm')
+  print(results5[1])
+  print(results5[2])
+  print(results5[3])
   print('******************************************************') 
 
 '''print(np.mean(precisionTab))
