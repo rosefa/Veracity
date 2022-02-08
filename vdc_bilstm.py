@@ -56,20 +56,51 @@ labels=[]
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 myData=data.loc[:,'article_content']
 labels=data.loc[:,'labels']
-#data1 = pd.read_csv('Fake.csv',usecols= ['text'] )
-#data2 = pd.read_csv('True.csv',usecols= ['text'] )
+dataf1 = pd.read_csv('pasvrai-1.csv',usecols= ['text'] )
+dataf2 = pd.read_csv('pasvrai-2.csv',usecols= ['text'] )
+dataf3 = pd.read_csv('pasvrai-3.csv',usecols= ['text'] )
+dataf4 = pd.read_csv('pasvrai-4.csv',usecols= ['text'] )
+datav1 = pd.read_csv('vrai-1.csv',usecols= ['text'] )
+datav2 = pd.read_csv('vrai-2.csv',usecols= ['text'] )
+datav3 = pd.read_csv('vrai-3.csv',usecols= ['text'] )
+datav4 = pd.read_csv('vrai-4.csv',usecols= ['text'] )
 i=0
 j=0
-'''while i<len(data1):
+while i<len(dataf1):
   labels.append(0)
   i=i+1
-while j<len(data2):
+i=0
+while i<len(dataf2):
+  labels.append(0)
+  i=i+1
+i=0
+while i<len(dataf3):
+  labels.append(0)
+  i=i+1
+i=0
+while i<len(dataf4):
+  labels.append(0)
+  i=i+1
+    
+while j<len(datav1):
   labels.append(1)
   j=j+1
-data = pd.concat([data1['text'], data2['text']])
+j=0
+while j<len(datav2):
+  labels.append(1)
+  j=j+1
+j=0
+while j<len(datav3):
+  labels.append(1)
+  j=j+1
+j=0
+while j<len(datav4):
+  labels.append(1)
+  j=j+1
+data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], datav1['text'],datav2['text'],datav3['text'],datav4['text']])
 print(data.head())
 print(len(data))
-print(len(labels))'''
+print(len(labels))
 
 '''titre= data.loc[:,'article_title']
 myData=data.loc[:,'article_content']
@@ -77,8 +108,8 @@ mylabels=data.loc[:,'labels']'''
 # First function is used to denoise text
 def denoise_text(text):
     # Strip html if any. For ex. removing <html>, <p> tags
-    soup = BeautifulSoup(text, "html.parser")
-    text = soup.get_text()
+    #soup = BeautifulSoup(text, "html.parser")
+    #text = soup.get_text()
     # Replace contractions in the text. For ex. didn't -> did not
     text = contractions.fix(text)
     return text
@@ -203,7 +234,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,optimizer='adam'):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,optimizer='adam',merge_mode="concat"):
     # Initialize a sequebtial model
     accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
@@ -231,7 +262,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
-    model.add(LSTM(32))
+    model.add(Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode))
     model.add(Dense(1, activation = 'sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     return model
@@ -346,19 +377,20 @@ print(np.var(exactitudeTab))'''
 
 seed = 7
 np.random.seed(seed)
-x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
+x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 #model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict, epochs=10, batch_size=64,verbose=0)
+model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
 # define the grid search parameters
-#batch_size = [10, 20, 40, 60, 80, 100,150]
-#epochs = [10,50]
-optimizer = ['sgd', 'rmsprop','adam']
+batch_size = [60, 80, 100,150]
+epochs = [10,50,60,100]
+#merge_mode=['sum', 'mul', 'concat', 'ave', None]
+#optimizer = ['adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(optimizer=optimizer)
-#param_grid = dict(batch_size=batch_size, epochs=epochs)
+#param_grid = dict(optimizer=optimizer)
+param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
