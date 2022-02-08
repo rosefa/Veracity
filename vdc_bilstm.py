@@ -261,6 +261,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
                                 trainable=True))
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
+    model.add(MaxPooling1D(pool_size=2))
     model.add(Conv1D(256, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
     model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
@@ -270,7 +271,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
 
 def build_bilstm2(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.1)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, 100))
