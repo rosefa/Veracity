@@ -280,7 +280,7 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
 
-def cnn-lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
+def cnn_lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
@@ -345,7 +345,7 @@ def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
 
-def vdc-lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
+def vdc_lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
@@ -419,7 +419,7 @@ def plot_graphs2(history1,history2,history3,history4,history5, string):
   plt.xlabel("Epochs")
   plt.ylabel(string)
   #plt.legend([string, 'val_'+string])
-  plt.legend(['CNN-BILSTM','CNN-LSTM','VDC-LSTM','DANN','DLSTM'])
+  plt.legend(['CNN_BILSTM','CNN_LSTM','VDC_LSTM','DANN','DLSTM'])
   plt.show()
 
 X = myData
