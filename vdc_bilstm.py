@@ -269,9 +269,45 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     return model
 
 
+def build_bilstm2(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)       
 
-#model = build_bilstm(word_index, embeddings_dict, 1)
-#model.summary()
+   
+    
+    model1=Conv1D(32, 3,activation='relu')(embedding_layer)
+    model1= Conv1D(32, 3,activation='relu')(model1)
+    model1 = Activation('relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1=Conv1D(64, 5,activation='relu')(embedding_layer)
+    model1= Conv1D(64, 5,activation='relu')(model1)
+    model1 = Activation('relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1= Conv1D(128,5,activation='relu')(model1)
+    model1= Conv1D(128,5,activation='relu')(model1)
+    model1 = Activation('relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1= Conv1D(256,7,activation='relu')(model1)
+    model1= Conv1D(256,7,activation='relu')(model1)
+    model1 = Activation('relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    #model1= GlobalMaxPooling1D()(model1)
+    model1 = LSTM(128,return_sequences=True)(model1)
+    model1 = LSTM(128)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
+    model = keras.Model(inputs=input,outputs=model1)
+    #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    
+    return model
+
 def get_eval_report(labels, preds):
     mcc = matthews_corrcoef(labels, preds)
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
@@ -292,9 +328,9 @@ def get_eval_report(labels, preds):
 def compute_metrics(labels, preds):
     #assert len(preds) == len(labels)
     return get_eval_report(labels, preds)
-def plot_graphs(history, string):
-  plt.plot(history.history[string])
-  plt.plot(history.history['val_'+string], '')
+def plot_graphs(history,history2, string):
+  plt.plot(history.history[string],'r--',history2.history[string],'g^')
+  plt.plot(history.history['val_'+string], 'r--',history2.history['val_'+string],'g^')
   plt.xlabel("Epochs")
   plt.ylabel(string)
   plt.legend([string, 'val_'+string])
@@ -303,78 +339,13 @@ def plot_graphs(history, string):
 X = myData
 y = mylabels
 
-print("Preparing model input ...")
-print("Done!")
-print("Building Model!")
-#history = model.fit(X_train_Glove, y_train,validation_split=0.1, epochs=10, batch_size=64, verbose=1)
-'''keras_accuracy.append(accuracy_score(np.argmax(y_test), np.argmax(model.predict(X_test_Glove)))
-xgb_clf = XGBClassifier(objective="multi:softprob", max_depth=6, learning_rate=0.1)    
-xgb_clf.fit(X_train_Glove, np.argmax(y_train, axis=1))
-xgb_accuracy.append(accuracy_score(np.argmax(X_train_Glove, axis=1), np.argmax(xgb_clf.predict_proba(X_data[test_index]), axis=1)))'''
 kf = KFold(n_splits=5)
 losses = []
 exactitudeTab = []
 precisionTab = []
 rappelTab = []
 
-
 histoire=[]
-
-'''r=range(20)
-for i in r :
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
-  X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X_train,X_test)
-  model = build_bilstm(word_index, embeddings_dict, 1)
-  history = model.fit(X_train_Glove, y_train, epochs=10, batch_size=64, verbose=0)
-  
-  results = model.evaluate(X_test_Glove, y_test, verbose=1)
-  losses.append(results[0])
-  precision.append(results[1])
-  histoire.append(history.history)
-print(losses)
-print(precision)
-print(histoire)'''
-'''for i in range(100):
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
-  X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X_train,X_test)
-  for train, test in kf.split(X_train_Glove,y_train) :
-    model = build_bilstm(word_index, embeddings_dict, 1)
-    history = model.fit(X_train_Glove[train], y_train[train],validation_data=(X_train_Glove[test],y_train[test]), epochs=60, batch_size=64, verbose=0)
-    #results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
-    #plot_graphs(history, 'accuracy')
-    #plot_graphs(history, 'loss')
-    #precision.append(resutlts[1])
-    #rappel.append(resutlts[1])
-  #plot_graphs(history, 'accuracy')
-  #plot_graphs(history, 'loss')
-  results = model.evaluate(X_test_Glove, y_test, verbose=0)
-  losses.append(results[0])
-  exactitude.append(results[1])
-  print(i)'''
-'''X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
-X_train_Glove, X_test_Glove, word_index, embeddings_dict = prepare_model_input(X_train,X_test)
-for train, test in kf.split(X_train_Glove,y_train) :
-  model = build_bilstm(word_index, embeddings_dict, 1)
-  history = model.fit(X_train_Glove[train], y_train[train],validation_data=(X_train_Glove[test],y_train[test]), epochs=60, batch_size=64, verbose=0)
-  #results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
-  #plot_graphs(history, 'accuracy')
-  #plot_graphs(history, 'loss')
-  #precision.append(resutlts[1])
-  #rappel.append(resutlts[1])
-#plot_graphs(history, 'accuracy')
-#plot_graphs(history, 'loss')
-model = build_bilstm(word_index, embeddings_dict, 1)
-history = model.fit(X_train_Glove, y_train,validation_data=(X_test_Glove,y_test), epochs=10, batch_size=64, verbose=1)
-results = model.evaluate(X_test_Glove, y_test, batch_size=64, verbose=1)
-#print(results)
-
-exactitudeTab.append(history.history['accuracy'])
-plot_graphs(history, 'accuracy')
-plot_graphs(history, 'loss')
-
-print(np.mean(exactitudeTab))
-print(np.std(exactitudeTab))
-print(np.var(exactitudeTab))'''
 
 seed = 7
 np.random.seed(seed)
@@ -404,17 +375,19 @@ for mean, stdev, param in zip(means, stds, params):
 kf = KFold(n_splits=5)
 for train, test in kf.split(text,mylabels) :
   model = build_bilstm(word_index, embeddings_dict, 1)
-  history = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=1)
-  results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
-  plot_graphs(history, 'accuracy')
-  plot_graphs(history, 'loss')
-  exactitudeTab.append(results[1])
-  precisionTab.append(results[2])
-  rappelTab.append(results[3])
-  print(results[1])
-  print(results[2])
-  print(results[3])
-  print(i+1) 
+  model2 = build_bilstm2(word_index, embeddings_dict, 1)
+  history = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
+  history2 = model2.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=, batch_size=)
+  #results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
+  plot_graphs(history, history2,'accuracy')
+  plot_graphs(history,history2, 'loss')
+  #exactitudeTab.append(results[1])
+  #precisionTab.append(results[2])
+  #rappelTab.append(results[3])
+  #print(results[1])
+  #print(results[2])
+  #print(results[3])
+  #print(i+1) 
 
 '''print(np.mean(precisionTab))
 print(np.std(precisionTab))
