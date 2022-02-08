@@ -56,9 +56,9 @@ logging.basicConfig(level=logging.INFO)
 #uploaded = files.upload()
 labels=[]
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-myData=data.loc[:,'article_content']
-labels=data.loc[:,'labels']
-'''dataf1 = pd.read_csv('pasvrai-1.csv',usecols= ['text'] )
+#myData=data.loc[:,'article_content']
+#labels=data.loc[:,'labels']
+dataf1 = pd.read_csv('pasvrai-1.csv',usecols= ['text'] )
 dataf2 = pd.read_csv('pasvrai-2.csv',usecols= ['text'] )
 dataf3 = pd.read_csv('pasvrai-3.csv',usecols= ['text'] )
 dataf4 = pd.read_csv('pasvrai-4.csv',usecols= ['text'] )
@@ -102,8 +102,9 @@ while j<len(datav4):
 data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], datav1['text'],datav2['text'],datav3['text'],datav4['text']])
 print(data.head())
 print(len(data))
-print(len(labels))'''
-
+print(len(labels))
+myData=data.loc[:,'article_content']
+labels=data.loc[:,'labels']
 '''titre= data.loc[:,'article_title']
 myData=data.loc[:,'article_content']
 mylabels=data.loc[:,'labels']'''
