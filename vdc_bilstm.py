@@ -58,14 +58,14 @@ labels=[]
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 #myData=data.loc[:,'article_content']
 #labels=data.loc[:,'labels']
-dataf1 = pd.read_csv('pasvrai-1.csv',usecols= ['text'] )
-dataf2 = pd.read_csv('pasvrai-2.csv',usecols= ['text'] )
-dataf3 = pd.read_csv('pasvrai-3.csv',usecols= ['text'] )
-dataf4 = pd.read_csv('pasvrai-4.csv',usecols= ['text'] )
-datav1 = pd.read_csv('vrai-1.csv',usecols= ['text'] )
-datav2 = pd.read_csv('vrai-2.csv',usecols= ['text'] )
-datav3 = pd.read_csv('vrai-3.csv',usecols= ['text'] )
-datav4 = pd.read_csv('vrai-4.csv',usecols= ['text'] )
+dataf1 = pd.read_csv('Pasvrai-1.csv',usecols= ['text'] )
+dataf2 = pd.read_csv('Pasvrai-2.csv',usecols= ['text'] )
+dataf3 = pd.read_csv('Pasvrai-3.csv',usecols= ['text'] )
+dataf4 = pd.read_csv('Pasvrai-4.csv',usecols= ['text'] )
+datav1 = pd.read_csv('Vrai-1.csv',usecols= ['text'] )
+datav2 = pd.read_csv('Vrai-2.csv',usecols= ['text'] )
+datav3 = pd.read_csv('Vrai-3.csv',usecols= ['text'] )
+datav4 = pd.read_csv('Vrai-4.csv',usecols= ['text'] )
 i=0
 j=0
 while i<len(dataf1):
@@ -103,8 +103,8 @@ data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], d
 print(data.head())
 print(len(data))
 print(len(labels))
-myData=data.loc[:,'article_content']
-labels=data.loc[:,'labels']
+myData=data
+labels=labels
 '''titre= data.loc[:,'article_title']
 myData=data.loc[:,'article_content']
 mylabels=data.loc[:,'labels']'''
