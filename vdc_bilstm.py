@@ -389,7 +389,7 @@ model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings
 merge_mode=['sum', 'mul', 'concat', 'ave', None]
 #optimizer = ['adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(merge_moder)
+param_grid = dict(merge_mode)
 #param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
