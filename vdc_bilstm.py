@@ -262,6 +262,8 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
+    model.add(Conv1D(256, 5, activation="relu"))
+    model.add(MaxPooling1D(pool_size=2))
     model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
     model.add(Dense(1, activation = 'sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
@@ -382,14 +384,14 @@ myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_mode
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 #model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=60,epochs=10,verbose=0)
+model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=64,epochs=10,verbose=0)
 # define the grid search parameters
 #batch_size = [60, 80, 100,150]
 #epochs = [10,50,60,100]
-merge_mode=['sum', 'mul', 'concat', 'ave', None]
+merge_mode=['sum', 'mul', 'concat', 'ave']
 #optimizer = ['adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(merge_mode)
+param_grid = dict(merge_mode=merge_mode)
 #param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
