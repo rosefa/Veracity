@@ -262,8 +262,8 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
-    model.add(Conv1D(256, 5, activation="relu"))
-    model.add(MaxPooling1D(pool_size=2))
+    #model.add(Conv1D(256, 5, activation="relu"))
+    #model.add(MaxPooling1D(pool_size=2))
     model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
     model.add(Dense(1, activation = 'sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
