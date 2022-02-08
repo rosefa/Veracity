@@ -382,7 +382,7 @@ myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_mode
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 #model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
+model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=60,epochs=10,verbose=0)
 # define the grid search parameters
 #batch_size = [60, 80, 100,150]
 #epochs = [10,50,60,100]
