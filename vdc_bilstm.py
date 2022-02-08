@@ -341,11 +341,19 @@ def compute_metrics(labels, preds):
     #assert len(preds) == len(labels)
     return get_eval_report(labels, preds)
 def plot_graphs(history,history2, string):
-  plt.plot(history.history[string],'b--',history2.history[string],'b-')
-  plt.plot(history.history['val_'+string], 'r--',history2.history['val_'+string],'r-')
+  plt.plot(history.history[string],'r--',history2.history[string],'b--')
+  #plt.plot(history.history['val_'+string], 'r--',history2.history['val_'+string],'r-')
   plt.xlabel("Epochs")
   plt.ylabel(string)
-  plt.legend([string, 'val_'+string])
+  #plt.legend([string])
+  plt.show()
+
+def plot_graphs2(history,history2, string):
+  #plt.plot(history.history[string],'b--',history2.history[string],'b-')
+  plt.plot(history.history['val_'+string], 'r-',history2.history['val_'+string],'b-')
+  plt.xlabel("Epochs")
+  plt.ylabel(string)
+  #plt.legend([string, 'val_'+string])
   plt.show()
 
 X = myData
@@ -393,6 +401,7 @@ for train, test in kf.split(text,mylabels) :
   history2 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64,verbose=0)
   results2 = model.evaluate(text[test],mylabels[test],verbose=0)
   plot_graphs(history1, history2,'accuracy')
+  plot_graphs2(history1, history2,'accuracy')
   plot_graphs(history1,history2, 'loss')
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
@@ -403,7 +412,7 @@ for train, test in kf.split(text,mylabels) :
   print(results2[1])
   print(results2[2])
   print(results2[3])
-  print(i+1) 
+  print('******************************************************') 
 
 '''print(np.mean(precisionTab))
 print(np.std(precisionTab))
