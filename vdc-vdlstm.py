@@ -216,15 +216,15 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
    
     
-    model1=Conv1D(64, 3,activation="relu")(embedding_layer)
+    model1=Conv1D(64, 5,activation="relu")(embedding_layer)
     #model1 = BatchNormalization()(model1)
     #model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(64, 64,activation="relu")(model1)
+    model1= Conv1D(64, 5,activation="relu")(model1)
     model1 =MaxPooling1D(2)(model1)
     #model1 = BatchNormalization()(model1)
     #model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(128,128,activation='relu')(model1)
-    model1= Conv1D(256,256,activation='relu')(model1)
+    model1= Conv1D(128,5,activation='relu')(model1)
+    model1= Conv1D(128,5,activation='relu')(model1)
     #model1 = BatchNormalization()(model1)
     model1 =MaxPooling1D(2)(model1)
     #model1= GlobalMaxPooling1D()(model1)
