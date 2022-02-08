@@ -341,8 +341,8 @@ def compute_metrics(labels, preds):
     #assert len(preds) == len(labels)
     return get_eval_report(labels, preds)
 def plot_graphs(history,history2, string):
-  plt.plot(history.history[string],'b--',history2.history[string],'b**')
-  plt.plot(history.history['val_'+string], 'r--',history2.history['val'+string],'r**')
+  plt.plot(history.history[string],'b--',history2.history[string],'b-')
+  plt.plot(history.history['val_'+string], 'r--',history2.history['val'+string],'r-')
   plt.xlabel("Epochs")
   plt.ylabel(string)
   plt.legend([string, 'val_'+string])
