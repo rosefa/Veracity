@@ -330,7 +330,7 @@ def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
-    model1 = Dense(1024,activation='relu')(embedding_layer)
+    model1 = Dense(300,activation='relu')(embedding_layer)
     model1 = Dropout(0.2)(model1)
     model1 = Dense(256,activation='relu')(model1)
     model1 = Dropout(0.2)(model1)
