@@ -262,7 +262,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
-    model.add(Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode))
+    model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
     model.add(Dense(1, activation = 'sigmoid'))
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
     return model
@@ -384,13 +384,13 @@ text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
 model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
 # define the grid search parameters
-batch_size = [60, 80, 100,150]
-epochs = [10,50,60,100]
-#merge_mode=['sum', 'mul', 'concat', 'ave', None]
+#batch_size = [60, 80, 100,150]
+#epochs = [10,50,60,100]
+merge_mode=['sum', 'mul', 'concat', 'ave', None]
 #optimizer = ['adam']
 #optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-#param_grid = dict(optimizer=optimizer)
-param_grid = dict(batch_size=batch_size, epochs=epochs)
+param_grid = dict(merge_moder)
+#param_grid = dict(batch_size=batch_size, epochs=epochs)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(text, mylabels)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
