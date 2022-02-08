@@ -386,10 +386,10 @@ for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
 kf = KFold(n_splits=5)
 for train, test in kf.split(text,mylabels) :
-  model1 = build_bilstm(word_index, embeddings_dict)
-  model2 = build_bilstm2(word_index, embeddings_dict)
-  history1 = model1.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
-  history2 = model2.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
+  model = build_bilstm(word_index, embeddings_dict)
+  history1 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
+  model = build_bilstm2(word_index, embeddings_dict)
+  history2 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
   #results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
   plot_graphs(history1, history2,'accuracy')
   plot_graphs(history1,history2, 'loss')
