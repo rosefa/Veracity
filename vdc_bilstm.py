@@ -234,9 +234,9 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,optimizer='adam',merge_mode="sum"):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
     # Initialize a sequebtial model
-    accuracy = tf.keras.metrics.Accuracy(name='accuracy')
+    '''accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
     rappel = tf.keras.metrics.Recall(name='recall')
     model = Sequential()
@@ -258,16 +258,25 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
                                 EMBEDDING_DIM,
                                 weights=[embedding_matrix],
                                 input_length=MAX_SEQUENCE_LENGTH,
-                                trainable=True))
+                                trainable=True))'''
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.1)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, 100))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
-    model.add(Conv1D(128, 5, activation="relu"))
-    model.add(MaxPooling1D(pool_size=2))
-    #model.add(Conv1D(256, 5, activation="relu"))
-    #model.add(MaxPooling1D(pool_size=2))
-    model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
-    model.add(Dense(1, activation = 'sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-    return model
+    model1=Conv1D(128, 5,activation='relu')(embedding_layer)
+    model1 =MaxPooling1D(2)(model1)
+    model1 = Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
+    model1 = Dense(1,activation='sigmoid')(model1)
+    model = keras.Model(inputs=input,outputs=model1)
+    #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+   
 
 
 def build_bilstm2(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
@@ -375,13 +384,13 @@ for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
 kf = KFold(n_splits=5)
 for train, test in kf.split(text,mylabels) :
-  model = build_bilstm(word_index, embeddings_dict, 1)
-  model2 = build_bilstm2(word_index, embeddings_dict, 1)
-  history = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
+  model1 = build_bilstm(word_index, embeddings_dict)
+  model2 = build_bilstm2(word_index, embeddings_dict)
+  history1 = model1.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
   history2 = model2.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64)
   #results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
-  plot_graphs(history, history2,'accuracy')
-  plot_graphs(history,history2, 'loss')
+  plot_graphs(history1, history2,'accuracy')
+  plot_graphs(history1,history2, 'loss')
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
   #rappelTab.append(results[3])
