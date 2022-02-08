@@ -234,7 +234,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,optimizer='adam',merge_mode="concat"):
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,optimizer='adam',merge_mode="sum"):
     # Initialize a sequebtial model
     accuracy = tf.keras.metrics.Accuracy(name='accuracy')
     precision = tf.keras.metrics.Precision(name='precision')
@@ -261,7 +261,6 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
                                 trainable=True))
     # Add hidden layers 
     model.add(Conv1D(128, 5, activation="relu"))
-    model.add(MaxPooling1D(pool_size=2))
     model.add(Conv1D(256, 5, activation="relu"))
     model.add(MaxPooling1D(pool_size=2))
     model.add(Bidirectional(LSTM(128,recurrent_dropout=0.2),merge_mode=merge_mode))
@@ -382,7 +381,7 @@ np.random.seed(seed)
 x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
 text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
-#model = build_bilstm(word_index, embeddings_dict, 1)
+'''#model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
 model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=64,epochs=10,verbose=0)
 # define the grid search parameters
@@ -400,7 +399,21 @@ means = grid_result.cv_results_['mean_test_score']
 stds = grid_result.cv_results_['std_test_score']
 params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))
+    print("%f (%f) with: %r" % (mean, stdev, param))'''
+kf = KFold(n_splits=5)
+for train, test in kf.split(text,mylabels) :
+  model = build_bilstm(word_index, embeddings_dict, 1)
+  history = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=1)
+  results = model.evaluate(myData_train_Glove[test], mylabels[test],verbose=0)
+  plot_graphs(history, 'accuracy')
+  plot_graphs(history, 'loss')
+  exactitudeTab.append(results[1])
+  precisionTab.append(results[2])
+  rappelTab.append(results[3])
+  print(results[1])
+  print(results[2])
+  print(results[3])
+  print(i+1) 
 
 '''print(np.mean(precisionTab))
 print(np.std(precisionTab))
