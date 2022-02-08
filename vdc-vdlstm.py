@@ -216,19 +216,21 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
 
    
     
-    model1=Conv1D(64, 3,activation="relu")(embedding_layer)
-    #model1 = BatchNormalization()(model1)
-    #model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(64, 3,activation="relu")(model1)
+    model1=Conv1D(32, 3)(embedding_layer)
+    model1= Conv1D(32, 3)(model1)
+    model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
-    #model1 = BatchNormalization()(model1)
-    #model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(128,3,activation='relu')(model1)
-    model1= Conv1D(128,3,activation='relu')(model1)
-    #model1 = BatchNormalization()(model1)
+    model1=Conv1D(64, 5)(embedding_layer)
+    model1= Conv1D(64, 5)(model1)
+    model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
-    model1= Conv1D(256,3,activation='relu')(model1)
-    model1= Conv1D(256,3,activation='relu')(model1)
+    model1= Conv1D(128,5)(model1)
+    model1= Conv1D(128,5)(model1)
+    model1 = Activation('relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1= Conv1D(256,7)(model1)
+    model1= Conv1D(256,7)(model1)
+    model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
     #model1= GlobalMaxPooling1D()(model1)
     model1 = LSTM(32)(model1)
@@ -236,8 +238,9 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     '''model1 = Dense(256, activation='relu')(model1)
     model1 = Dense(256, activation='relu')(model1)
     model1 = Dense(256, activation='relu')(model1)'''
+    model1 = Dense(256, activation='relu')(model1)
     model1 = Dropout(0.5)(model1)
-    model1 = Dense(1,activation='sigmoid')(model1)
+    model1 = Dense(1,activation='softmax')(model1)
     
     
     '''model2 =Conv1D(128, 5,activation="relu")(embedding_layer)
