@@ -338,6 +338,9 @@ def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
+    model1 = Dropout(0.2)(embedding_layer)
+    model1 = GlobalAveragepooling1D()(model1)
+    model1 = Dropout(0.2)(model1)
     model1 = Dense(256,activation='relu')(embedding_layer)
     model1 = Dropout(0.2)(model1)
     model1 = Dense(128,activation='relu')(model1)
@@ -447,12 +450,13 @@ seed = 7
 np.random.seed(seed)
 #myDatatest=data.loc[:,'article_content']
 #labelstest=data.loc[:,'labels']
-#x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
-myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
-#text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
-text = myData_train_Glove
-mylabels = mylabels
-myDatatest = myData_test_Glove
+x_train,x_test,y_train,y_test = train_test_split(myDatatest,labelstest, test_size=0.2)
+#myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
+myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
+text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+#text = myData_train_Glove
+#mylabels = mylabels
+#myDatatest = myData_test_Glove
 #mylabels = np.concatenate((y_train, y_test), axis=0)
 '''#model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
@@ -474,25 +478,28 @@ params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
 kf = KFold(n_splits=5)
-for train, test in kf.split(text,mylabels) :
+for train, test in kf.split(text,labelstest) :
   model = cnn_bilstm(word_index, embeddings_dict)
-  history1 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
+  history1 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
   results1 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = cnn_lstm(word_index, embeddings_dict)
-  history2 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64,verbose=0)
+  history2 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64,verbose=0)
   results2 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = vdc_lstm(word_index, embeddings_dict)
-  history3 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
+  history3 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
   results3 = model.evaluate(text[test],mylabels[test],verbose=0)
   #model = dann(word_index, embeddings_dict)
   #history4 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
   #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = dlstm(word_index, embeddings_dict)
-  history5 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
-  results5 = model.evaluate(myDatatest,labelstest,verbose=0)
-  #plot_graphs(history1, history2,history3,history5,'accuracy')
-  #plot_graphs2(history1, history2,history3,history5,'val_accuracy')
-  #plot_graphs(history1,history2,history3,history5, 'loss')
+  history5 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
+  results5 = model.evaluate(text[test],mylabels[test],verbose=0)
+  model = dann(word_index, embeddings_dict)
+  history6 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
+  results6 = model.evaluate(text[test],mylabels[test],verbose=0)
+  plot_graphs(history1, history2,history3,history5,'accuracy')
+  plot_graphs2(history1, history2,history3,history5,'val_accuracy')
+  plot_graphs(history1,history2,history3,history5, 'loss')
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
   #rappelTab.append(results[3])
@@ -516,6 +523,10 @@ for train, test in kf.split(text,mylabels) :
   print(results5[1])
   print(results5[2])
   print(results5[3])
+  print('dann')
+  print(results6[1])
+  print(results6[2])
+  print(results6[3])
   print('******************************************************') 
 
 '''print(np.mean(precisionTab))
