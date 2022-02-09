@@ -59,12 +59,12 @@ data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 #myData=data.loc[:,'article_content']
 #labels=data.loc[:,'labels']
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
-dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
-dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
+#dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
+#dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
 dataf4 = pd.read_csv('Pasvrai-4.csv', encoding= 'unicode_escape' )
 datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
-datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
-datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
+#datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
+#datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
 datav4 = pd.read_csv('Vrai-4.csv', encoding= 'unicode_escape')
 
 i=0
@@ -72,14 +72,14 @@ j=0
 while i<len(dataf1):
   labels.append(0)
   i=i+1
-i=0
+'''i=0
 while i<len(dataf2):
   labels.append(0)
   i=i+1
 i=0
 while i<len(dataf3):
   labels.append(0)
-  i=i+1
+  i=i+1'''
 i=0
 while i<len(dataf4):
   labels.append(0)
@@ -88,20 +88,21 @@ while i<len(dataf4):
 while j<len(datav1):
   labels.append(1)
   j=j+1
-j=0
+'''j=0
 while j<len(datav2):
   labels.append(1)
   j=j+1
-j=0
-while j<len(datav3):
+j=0'''
+'''while j<len(datav3):
   labels.append(1)
-  j=j+1
+  j=j+1'''
 j=0
 while j<len(datav4):
   labels.append(1)
   j=j+1
 
-data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], datav1['text'],datav2['text'],datav3['text'],datav4['text']])
+#data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], datav1['text'],datav2['text'],datav3['text'],datav4['text']])
+data = pd.concat([dataf1['text'],dataf4['text'], datav1['text'],datav4['text']])
 print(data.head())
 print(len(data))
 print(len(labels))
