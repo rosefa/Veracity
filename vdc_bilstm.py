@@ -64,7 +64,7 @@ dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
 dataf4 = pd.read_csv('Pasvrai-4.csv', encoding= 'unicode_escape' )
 datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
 datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
-datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape'
+datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
 datav4 = pd.read_csv('Vrai-4.csv', encoding= 'unicode_escape')
 
 i=0
