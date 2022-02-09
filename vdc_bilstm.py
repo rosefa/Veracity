@@ -107,7 +107,8 @@ print(data.head())
 print(len(data))
 print(len(labels))
 #myData=data
-myData=data.loc[:,"text"]
+myData=data["text"]
+#myData=data.loc["text"]
 labels=labels
 '''titre= data.loc[:,'article_title']
 myData=data.loc[:,"text"]
