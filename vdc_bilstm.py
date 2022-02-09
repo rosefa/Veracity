@@ -56,8 +56,8 @@ logging.basicConfig(level=logging.INFO)
 #uploaded = files.upload()
 labels=[]
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-#myData=data.loc[:,'article_content']
-#labels=data.loc[:,'labels']
+myDatatest=data.loc[:,'article_content']
+labelstest=data.loc[:,'labels']
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 #dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
 #dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
@@ -445,10 +445,15 @@ histoire=[]
 
 seed = 7
 np.random.seed(seed)
-x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
-myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
-text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
-mylabels = np.concatenate((y_train, y_test), axis=0)
+#myDatatest=data.loc[:,'article_content']
+#labelstest=data.loc[:,'labels']
+#x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.3)
+myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
+#text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+text = myData_train_Glove
+mylabels = mylabels
+myDatatest = myData_test_Glove
+#mylabels = np.concatenate((y_train, y_test), axis=0)
 '''#model = build_bilstm(word_index, embeddings_dict, 1)
 #model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
 model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=64,epochs=10,verbose=0)
@@ -471,23 +476,23 @@ for mean, stdev, param in zip(means, stds, params):
 kf = KFold(n_splits=5)
 for train, test in kf.split(text,mylabels) :
   model = cnn_bilstm(word_index, embeddings_dict)
-  history1 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  history1 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
   results1 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = cnn_lstm(word_index, embeddings_dict)
-  history2 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64,verbose=0)
+  history2 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64,verbose=0)
   results2 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = vdc_lstm(word_index, embeddings_dict)
-  history3 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  history3 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
   results3 = model.evaluate(text[test],mylabels[test],verbose=0)
   #model = dann(word_index, embeddings_dict)
-  #history4 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
+  #history4 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
   #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = dlstm(word_index, embeddings_dict)
-  history5 = model.fit(text[train], mylabels[train],validation_data=(text[test],mylabels[test]), epochs=10, batch_size=64, verbose=0)
-  results5 = model.evaluate(text[test],mylabels[test],verbose=0)
-  plot_graphs(history1, history2,history3,history5,'accuracy')
-  plot_graphs2(history1, history2,history3,history5,'val_accuracy')
-  plot_graphs(history1,history2,history3,history5, 'loss')
+  history5 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
+  results5 = model.evaluate(myDatatest,labelstest,verbose=0)
+  #plot_graphs(history1, history2,history3,history5,'accuracy')
+  #plot_graphs2(history1, history2,history3,history5,'val_accuracy')
+  #plot_graphs(history1,history2,history3,history5, 'loss')
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
   #rappelTab.append(results[3])
