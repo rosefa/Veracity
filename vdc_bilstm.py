@@ -43,10 +43,10 @@ from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
 #from google.colab import files
-#nltk.download('stopwords')
-from nltk.corpus import stopwords
+nltk.download('stopwords')
+#from nltk.corpus import stopwords
 #nltk.download('punkt')
-from nltk.corpus import punkt
+#from nltk.corpus import punkt
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 
