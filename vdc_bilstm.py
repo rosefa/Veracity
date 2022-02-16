@@ -43,7 +43,7 @@ from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
 #from google.colab import files
-nltk.download('stopwords')
+#nltk.download('stopwords')
 #from nltk.corpus import stopwords
 #nltk.download('punkt')
 #from nltk.corpus import punkt
@@ -83,6 +83,7 @@ def remove_stopwords(words):
     for word in words:
         if word not in stopwords.words('english'):
             new_words.append(word)
+    new_words = ' '.join([x for x in new_words])
     return new_words
 def remove_punctuation(words):
     new_words = []
@@ -90,6 +91,7 @@ def remove_punctuation(words):
         new_word = re.sub(r'[^\w\s]', '', word)
         if new_word != '':
             new_words.append(new_word)
+    new_words = ' '.join([x for x in new_words])
     return new_words
 #***************NORMALISATION***********************
 def normalize_unicode(text, form='NFKC'):
@@ -121,6 +123,7 @@ def lemmatize_text(words):
                     pos = wordnet.ADJ
                 lemma = lemmatizer.lemmatize(word, pos=pos)
                 lemmas.append(lemma)
+    lemmas = ' '.join([x for x in lemmas])
     return lemmas  
         
 def normalize_number(text):
@@ -135,10 +138,11 @@ def text_prepare(text):
     text_traite = remove_punctuation(text_traite)
     text_traite = normalize_unicode(text_traite,form='NFKC')
     text_traite = normalize_number(text_traite)
+    text_traite = lemmatize_text(text_traite)
     #text_traite = clean_url(text)
     #text_traite = clean_url(text)
-    mitext = ' '.join([x for x in lemmatize_text(text_traite)])
-    return mitext
+    #mitext = ' '.join([x for x in lemmatize_text(text_traite)])
+    return text_traite
 '''def clean_html_and_js_tags(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
     [x.extract() for x in soup.findAll(['script', 'style'])]
