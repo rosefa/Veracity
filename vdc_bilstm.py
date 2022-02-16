@@ -231,7 +231,7 @@ def lemmatize_verbs(words):
 le = LabelEncoder()
 mylabels = le.fit_transform(mylabels)'''
 
-************************ VECTORISATION DU TEXT**************************
+#************************ VECTORISATION DU TEXT**************************
 
 def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
     np.random.seed(7)
@@ -266,7 +266,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
-********************* CONSTRUCTION DES MODELS *****************************
+#********************* CONSTRUCTION DES MODELS *****************************
 def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
     # Initialize a sequebtial model
     '''accuracy = tf.keras.metrics.Accuracy(name='accuracy')
@@ -459,7 +459,7 @@ def plot_graphs2(history1,history2,history3,history5, string):
   #plt.legend([string, 'val_'+string])
   plt.legend(['CNN_BILSTM','CNN_LSTM','VDC_LSTM','DANN','DLSTM'])
   plt.show()
-*********************** DEBUT DU PROCESSING***********************
+#*********************** DEBUT DU PROCESSING***********************
 logging.basicConfig(level=logging.INFO)
 labels=[]
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
