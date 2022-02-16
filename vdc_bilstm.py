@@ -18,8 +18,8 @@ import nltk
 #nltk.download('omw-1.4')
 import inflect
 import contractions
-#from bs4 import BeautifulSoup
-import BeautifulSoup
+from bs4 import BeautifulSoup
+#import BeautifulSoup
 import re, string, unicodedata
 from nltk import word_tokenize, sent_tokenize
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
