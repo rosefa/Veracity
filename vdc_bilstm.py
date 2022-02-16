@@ -15,13 +15,13 @@ from sklearn.model_selection import KFold
 import pandas as pd
 import numpy as np
 import nltk
-nltk.download('omw-1.4')
+#nltk.download('omw-1.4')
 import inflect
 import contractions
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
+import BeautifulSoup
 import re, string, unicodedata
 from nltk import word_tokenize, sent_tokenize
-from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
 from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation
@@ -43,89 +43,118 @@ from zipfile import ZipFile
 from sklearn.model_selection import GridSearchCV
 from keras.wrappers.scikit_learn import KerasClassifier
 #from google.colab import files
-nltk.download('stopwords')
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
-nltk.download('punkt')
-nltk.download('wordnet')
+#nltk.download('punkt')
+from nltk.corpus import punkt
+from nltk.corpus import wordnet
+from nltk.corpus import stopwords
+
 url= 'http://nlp.stanford.edu/data/glove.6B.zip'
 filename = wget.download(url)
 with ZipFile(filename, 'r') as f:
     f.extractall()
 #unzip filename
-logging.basicConfig(level=logging.INFO)
-#uploaded = files.upload()
-labels=[]
-data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-myDatatest=data.loc[:,'article_content']
-labelstest=data.loc[:,'labels']
-dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
-#dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
-#dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
-#dataf4 = pd.read_csv('Pasvrai-4.csv', encoding= 'unicode_escape' )
-datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
-#datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
-#datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
-#datav4 = pd.read_csv('Vrai-4.csv', encoding= 'unicode_escape')
 
-i=0
-j=0
-while i<len(dataf1):
-  labels.append(0)
-  i=i+1
-'''i=0
-while i<len(dataf2):
-  labels.append(0)
-  i=i+1
-i=0
-while i<len(dataf3):
-  labels.append(0)
-  i=i+1
-i=0
-while i<len(dataf4):
-  labels.append(0)
-  i=i+1'''
-    
-while j<len(datav1):
-  labels.append(1)
-  j=j+1
-'''j=0
-while j<len(datav2):
-  labels.append(1)
-  j=j+1
-j=0'''
-'''while j<len(datav3):
-  labels.append(1)
-  j=j+1
-j=0
-while j<len(datav4):
-  labels.append(1)
-  j=j+1'''
-
-#data = pd.concat([dataf1['text'],dataf2['text'],dataf3['text'],dataf4['text'], datav1['text'],datav2['text'],datav3['text'],datav4['text']])
-data = pd.concat([dataf1['text'], datav1['text']])
-print(data.head())
-print(len(data))
-print(len(labels))
-#myData=data
-myData=data
-#myData=data.loc["text"]
-labels=labels
-'''titre= data.loc[:,'article_title']
-myData=data.loc[:,"text"]
-mylabels=data.loc[:,'labels']'''
+#***************NETTOYAGE DES DONNEES***********************
 # First function is used to denoise text
-def denoise_text(text):
-    # Strip html if any. For ex. removing <html>, <p> tags
-    #soup = BeautifulSoup(text, "html.parser")
-    #text = soup.get_text()
-    # Replace contractions in the text. For ex. didn't -> did not
-    text = contractions.fix(text)
-    return text
+def clean_text(text):
+    replaced_text = '\n'.join(s.strip() for s in text.splitlines()[2:] if s != '')  # skip header by [2:]
+    replaced_text = replaced_text.lower()
+    replaced_text = re.sub(r'[【】]', ' ', replaced_text)
+    replaced_text = re.sub(r'[（）()]', ' ', replaced_text)
+    replaced_text = re.sub(r'[［］\[\]]', ' ', replaced_text)
+    replaced_text = re.sub(r'[@＠]\w+', '', replaced_text)
+    replaced_text = re.sub(r'https?:\/\/.*?[\r\n ]', '', replaced_text)
+    replaced_text = re.sub(r'　', ' ', replaced_text)
+    return replaced_text
+
+def clean_url(html_text):
+    clean_text = re.sub(r'http\S+', '', html_text)
+    return clean_text
+def clean_html_tags(html_text):
+    soup = BeautifulSoup(html_text, 'html.parser')
+    cleaned_text = soup.get_text()
+    cleaned_text = ''.join(cleaned_text.splitlines())
+    return cleaned_text
+
+def remove_stopwords(words):
+    new_words = []
+    for word in words:
+        if word not in stopwords.words('english'):
+            new_words.append(word)
+    return new_words
+def remove_punctuation(words):
+    new_words = []
+    for word in words:
+        new_word = re.sub(r'[^\w\s]', '', word)
+        if new_word != '':
+            new_words.append(new_word)
+    return new_words
+#***************NORMALISATION***********************
+def normalize_unicode(text, form='NFKC'):
+    normalized_text = unicodedata.normalize(form, text)
+    return normalized_text
+'''def lemmatize_term(term, pos=None):
+    if pos is None:
+        synsets = wordnet.synsets(term)
+        if not synsets:
+            return term
+        pos = synsets[0].pos()
+        if pos == wordnet.ADJ_SAT:
+            pos = wordnet.ADJ
+    lemmatizer = WordNetLemmatizer()
+    return lemmatizer.lemmatize(term, pos=pos)'''
+def lemmatize_text(words):
+    """Lemmatize verbs in list of tokenized words"""
+    lemmatizer = WordNetLemmatizer()
+    lemmas = []
+    for word in words:
+        pos=None
+        if pos is None:
+            synsets = wordnet.synsets(word)
+            if not synsets:
+                lemmas.append(word)
+            else :
+                pos = synsets[0].pos()
+                if pos == wordnet.ADJ_SAT:
+                    pos = wordnet.ADJ
+                lemma = lemmatizer.lemmatize(word, pos=pos)
+                lemmas.append(lemma)
+    return lemmas  
+        
+def normalize_number(text):
+    replaced_text = re.sub(r'\d+', '0', text)
+    return replaced_text
+#**********************PRETRAITEMENT**************************
+def text_prepare(text):
+    text_traite = clean_text(text)
+    text_traite = clean_url(text_traite)
+    text_traite = clean_html_tags(text_traite)
+    text_traite = remove_stopwords(text_traite)
+    text_traite = remove_punctuation(text_traite)
+    text_traite = normalize_unicode(text_traite,form='NFKC')
+    text_traite = normalize_number(text_traite)
+    #text_traite = clean_url(text)
+    #text_traite = clean_url(text)
+    mitext = ' '.join([x for x in lemmatize_text(text_traite)])
+    return mitext
+'''def clean_html_and_js_tags(html_text):
+    soup = BeautifulSoup(html_text, 'html.parser')
+    [x.extract() for x in soup.findAll(['script', 'style'])]
+    cleaned_text = soup.get_text()
+    cleaned_text = ''.join(cleaned_text.splitlines())
+    return cleaned_text'''
+
+'''def denoise_text(text):
+    text = BeautifulSoup(text)
+    text = str (text.get_text().encode())
+    return text'''
 # Check the function 
 
 # Text normalization includes many steps.
 # Each function below serves a step.
-def remove_non_ascii(words):
+'''def remove_non_ascii(words):
     """Remove non-ASCII characters from list of tokenized words"""
     new_words = []
     for word in words:
@@ -146,8 +175,8 @@ def remove_punctuation(words):
         new_word = re.sub(r'[^\w\s]', '', word)
         if new_word != '':
             new_words.append(new_word)
-    return new_words
-def replace_numbers(words):
+    return new_words'''
+'''def replace_numbers(words):
     """Replace all interger occurrences in list of tokenized words with textual representation"""
     p = inflect.engine()
     new_words = []
@@ -157,15 +186,15 @@ def replace_numbers(words):
             new_words.append(new_word)
         else:
             new_words.append(word)
-    return new_words
-def remove_stopwords(words):
+    return new_words'''
+'''def remove_stopwords(words):
     """Remove stop words from list of tokenized words"""
     new_words = []
     for word in words:
         if word not in stopwords.words('english'):
             new_words.append(word)
-    return new_words
-def stem_words(words):
+    return new_words'''
+'''def stem_words(words):
     """Stem words in list of tokenized words"""
     stemmer = LancasterStemmer()
     stems = []
@@ -180,8 +209,9 @@ def lemmatize_verbs(words):
     for word in words:
         lemma = lemmatizer.lemmatize(word, pos='v')
         lemmas.append(lemma)
-    return lemmas
-def normalize_text(words):
+    return lemmas'''
+
+'''def normalize_text(words):
     words = remove_non_ascii(words)
     words = to_lowercase(words)
     words = remove_punctuation(words)
@@ -189,25 +219,19 @@ def normalize_text(words):
     words = remove_stopwords(words)
     words = stem_words(words)
     words = lemmatize_verbs(words)
-    return words
+    return words'''
     # Tokenize tweet into words
-def tokenize(text):
-    return nltk.word_tokenize(text)
+'''def tokenize(text):
+    return nltk.word_tokenize(text)'''
 # check the function
 
-def text_prepare(text):
-    mitext = denoise_text(text)
-    mitext = ' '.join([x for x in normalize_text(tokenize(mitext))])
-    return mitext
+
 
 '''myData = [text_prepare(x) for x in myData]
 le = LabelEncoder()
 mylabels = le.fit_transform(mylabels)'''
-myData = [text_prepare(x) for x in myData]
-#myData = [text_prepare(x) for x in data]
-le = LabelEncoder()
-mylabels = le.fit_transform(labels)
 
+************************ VECTORISATION DU TEXT**************************
 
 def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
     np.random.seed(7)
@@ -242,6 +266,7 @@ def prepare_model_input(X_train, X_test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=3
     #print('Total %s word vectors.' % len(embeddings_dict))
     return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
+********************* CONSTRUCTION DES MODELS *****************************
 def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
     # Initialize a sequebtial model
     '''accuracy = tf.keras.metrics.Accuracy(name='accuracy')
@@ -434,26 +459,55 @@ def plot_graphs2(history1,history2,history3,history5, string):
   #plt.legend([string, 'val_'+string])
   plt.legend(['CNN_BILSTM','CNN_LSTM','VDC_LSTM','DANN','DLSTM'])
   plt.show()
+*********************** DEBUT DU PROCESSING***********************
+logging.basicConfig(level=logging.INFO)
+labels=[]
+data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+myDatatest=data.loc[:,'article_content']
+labelstest=data.loc[:,'labels']
+dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
+datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
 
+i=0
+j=0
+while i<len(dataf1):
+  labels.append(0)
+  i=i+1
+while j<len(datav1):
+  labels.append(1)
+  j=j+1
+data = pd.concat([dataf1['text'], datav1['text']])
+'''print(data.head())
+print(len(data))
+print(len(labels))'''
+#myData=data
+myData=data
+labels=labels
+'''titre= data.loc[:,'article_title']
+myData=data.loc[:,"text"]
+mylabels=data.loc[:,'labels']'''
+myData = [text_prepare(x) for x in myData]
+print('pretraitement termine !!!')
+le = LabelEncoder()
+mylabels = le.fit_transform(labels)
 X = myData
 y = mylabels
-
-kf = KFold(n_splits=5)
+kf = KFold(n_splits=10)
 losses = []
 exactitudeTab = []
 precisionTab = []
 rappelTab = []
-
 histoire=[]
-
 seed = 7
 np.random.seed(seed)
 #myDatatest=data.loc[:,'article_content']
 #labelstest=data.loc[:,'labels']
-x_train,x_test,y_train,y_test = train_test_split(myDatatest,labelstest, test_size=0.2)
+x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
 #myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
-text = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+textData = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+textLabel = np.concatenate((y_train, y_test), axis=0)
+print("debut des k-fold")
 #text = myData_train_Glove
 #mylabels = mylabels
 #myDatatest = myData_test_Glove
@@ -477,8 +531,9 @@ stds = grid_result.cv_results_['std_test_score']
 params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
-kf = KFold(n_splits=5)
-for train, test in kf.split(text,labelstest) :
+
+kf = KFold(n_splits=10)
+for train, test in kf.split(textData,textLabel) :
   model = cnn_bilstm(word_index, embeddings_dict)
   history1 = model.fit(text[train], mylabels[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
   results1 = model.evaluate(text[test],mylabels[test],verbose=0)
@@ -528,26 +583,3 @@ for train, test in kf.split(text,labelstest) :
   print(results6[2])
   print(results6[3])
   print('******************************************************') 
-
-'''print(np.mean(precisionTab))
-print(np.std(precisionTab))
-print(np.var(precisionTab))
-
-print(np.mean(rappelTab))
-print(np.std(rappelTab))
-print(np.var(rappelTab))'''
-
-'''print("\n Evaluating Model ... \n")
-#predicted = model.predict_classes(X_test_Glove)
-predicted=model.predict(X_test_Glove) 
-#print(metrics.classification_report(y_test, predicted))
-print("\n")
-logger = logging.getLogger("logger")
-result = compute_metrics(y_test, predicted)
-for key in (result.keys()):
-    logger.info("  %s = %s", key, str(result[key]))'''
-
-#To save the tokenizer follow instructions in prepare_model_input function i.e. uncomment this line #pickle.dump(tokenizer, open('text_tokenizer.pkl', 'wb')) in that function
-# To save the model run this line
-#pickle.dump(model, open('model.pkl', 'wb'))
-# you are ready for deployment!
