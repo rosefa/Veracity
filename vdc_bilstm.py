@@ -24,7 +24,7 @@ import re, string, unicodedata
 from nltk import word_tokenize, sent_tokenize
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
-from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation
+from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation,GlobalMaxPooling1D
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -368,7 +368,7 @@ def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
     model1 = Dropout(0.2)(embedding_layer)
-    model1 = GlobalAveragepooling1D()(model1)
+    model1 = GlobalMaxPooling1D()(model1)
     model1 = Dropout(0.2)(model1)
     model1 = Dense(256,activation='relu')(embedding_layer)
     model1 = Dropout(0.2)(model1)
