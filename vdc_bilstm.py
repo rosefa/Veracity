@@ -529,9 +529,9 @@ np.random.seed(seed)
 x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
 #myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
-textData = np.concatenate(myData_train_Glove, myData_test_Glove)
-#textLabel = np.concatenate((y_train, y_test), axis=0)
-textLabel = np.concatenate(y_train, y_test)
+textData = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
+textLabel = np.concatenate((y_train, y_test), axis=0)
+#textLabel = np.concatenate(y_train, y_test)
 print("debut des k-fold")
 #text = myData_train_Glove
 #mylabels = mylabels
