@@ -320,7 +320,7 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
     #model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
     preds = Dense (1, activation = 'softmax')(densebi)
     reLU = LeakyReLU (alpha = 0.1)(preds)
-    model = keras.Model(inputs=input,outputs=reLu)
+    model = keras.Model(inputs=input,outputs=reLU)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
