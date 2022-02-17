@@ -24,7 +24,7 @@ import re, string, unicodedata
 from nltk import word_tokenize, sent_tokenize
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
-from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation,GlobalMaxPooling1D
+from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation,GlobalMaxPooling1D,LeakyReLU,concatenate
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -305,13 +305,22 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
         if embedding_vector is not None:
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
-    # Add hidden layers 
-    model1=Conv1D(128, 5,activation='relu')(embedding_layer)
-    model1 =MaxPooling1D(2)(model1)
-    model1 = Dropout(0.2)(model1)
-    model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
-    model1 = Dense(1,activation='sigmoid')(model1)
-    model = keras.Model(inputs=input,outputs=model1)
+    # Add hidden layers
+    conv=Conv1D(128, 5,activation='relu')(embedding_layer)
+    pool =MaxPooling1D(5)(conv)
+    conv=Conv1D(128, 5,activation='relu')(pool)
+    pool =MaxPooling1D(5)(conv)
+    conv=Conv1D(128, 5,activation='relu')(pool)
+    pool =MaxPooling1D(35)(conv)
+    flat = Flatten()(pool)
+    dense = Dense(128)(flat)
+    #rnn_layer = LSTM(128, batch_input_shape = (10, 300,))(embedding_layer, initial_state = [model1, model1])
+    bi = Bidirectional(LSTM(128))(embedding_layer)
+    densebi = concatenate([dense,bi])
+    #model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
+    preds = Dense (1, activation = 'softmax')(densebi)
+    reLU = LeakyReLU (alpha = 0.1)(preds)
+    model = keras.Model(inputs=input,outputs=reLu)
     #plot_model(model, "VDC-BILSTM.png", show_shapes=True)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
