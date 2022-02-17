@@ -545,7 +545,7 @@ params = grid_result.cv_results_['params']
 for mean, stdev, param in zip(means, stds, params):
     print("%f (%f) with: %r" % (mean, stdev, param))'''
 
-kf = KFold(n_splits=10)
+kf = KFold(n_splits=5)
 for train, test in kf.split(textData,textLabel) :
   model = cnn_bilstm(word_index, embeddings_dict)
   history1 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
