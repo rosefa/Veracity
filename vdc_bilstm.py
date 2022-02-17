@@ -311,7 +311,7 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
     conv=Conv1D(128, 5,activation='relu')(pool)
     pool =MaxPooling1D(5)(conv)
     conv=Conv1D(128, 5,activation='relu')(pool)
-    pool =MaxPooling1D(35)(conv)
+    pool =MaxPooling1D(5)(conv)
     flat = Flatten()(pool)
     dense = Dense(128)(flat)
     #rnn_layer = LSTM(128, batch_input_shape = (10, 300,))(embedding_layer, initial_state = [model1, model1])
