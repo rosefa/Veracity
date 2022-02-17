@@ -139,9 +139,6 @@ def text_prepare(text):
     text_traite = normalize_unicode(text_traite,form='NFKC')
     text_traite = normalize_number(text_traite)
     text_traite = lemmatize_text(text_traite)
-    #text_traite = clean_url(text)
-    #text_traite = clean_url(text)
-    #mitext = ' '.join([x for x in lemmatize_text(text_traite)])
     return text_traite
 '''def clean_html_and_js_tags(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
@@ -316,12 +313,12 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
     dense = Dense(128)(flat)
     dense = Dropout(0.5)(dense)
     #rnn_layer = LSTM(128, batch_input_shape = (10, 300,))(embedding_layer, initial_state = [model1, model1])
-    bi = Bidirectional(LSTM(128,recurrent_dropout=0.2))(embedding_layer)
+    bi = Bidirectional(LSTM(64,recurrent_dropout=0.2))(embedding_layer)
     densebi = concatenate([dense,bi])
     attention_prob = Dense(128,activation = 'softmax')(densebi)
     attention_mul = concatenate([densebi, attention_prob])
-    attention_mul = Dropout(0.2)(attention_mul)
-    #model1 = Bidirectional(LSTM(32,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
+    #attention_mul = Dropout(0.2)(attention_mul)
+    #model1 = Bidirectional(LSTM(64,recurrent_dropout=0.2),merge_mode=merge_mode)(model1)
     preds = Dense (1, activation = 'sigmoid')(attention_mul)
     reLU = LeakyReLU (alpha = 0.1)(preds)
     model = keras.Model(inputs=input,outputs=reLU)
@@ -342,8 +339,14 @@ def cnn_lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM
     # Add hidden layers 
     model1=Conv1D(128, 5,activation='relu')(embedding_layer)
     model1 =MaxPooling1D(2)(model1)
-    model1 = Dropout(0.2)(model1)
-    model1 = LSTM(32)(model1)
+    model1 = Dropout(0.5)(model1)
+    model1=Conv1D(256, 5,activation='relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1 = Dropout(0.5)(model1)
+    model1=Conv1D(256, 5,activation='relu')(model1)
+    model1 =MaxPooling1D(2)(model1)
+    model1 = Dropout(0.5)(model1)
+    model1 = LSTM(64)(model1)
     model1 = Dense(1,activation='sigmoid')(model1)
     model = keras.Model(inputs=input,outputs=model1)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
@@ -360,13 +363,17 @@ def dlstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=10
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
-    model1 = LSTM(128,return_sequences=True)(embedding_layer)
-    model1 = Dropout(0.2)(model1)
-    model1 = LSTM(128)(model1)
+    model1 = LSTM(256)(embedding_layer)
     model1 = Dense(256,activation='relu')(model1)
     model1 = Dropout(0.2)(model1)
-    model1 = Dense(1,activation='sigmoid')(model1)
-    model = keras.Model(inputs=input,outputs=model1)
+    model2 = LSTM(256)(embedding_layer)
+    model2 = Dense(256,activation='relu')(model2)
+    model2 = Dropout(0.2)(model2)
+    dense_concat = concatenate([model1, model2])
+    attention_prob = Dense(64,activation = 'relu')(dense_concat)
+    attention_mul = concatenate([dense_concat, attention_prob])
+    modelfinal = Dense(1,activation='sigmoid')(attention_mul)
+    model = keras.Model(inputs=input,outputs=modelfinal)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
 def dann(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100,merge_mode="sum"):
@@ -409,13 +416,13 @@ def vdc_lstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM
 
    
     
-    model1=Conv1D(32, 3,activation='relu')(embedding_layer)
-    model1= Conv1D(32, 3,activation='relu')(model1)
+    model1=Conv1D(128, 5,activation='relu')(embedding_layer)
+    model1= Conv1D(128, 5,activation='relu')(model1)
     model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
     model1 = Dropout(0.2)(model1)
-    model1=Conv1D(64, 5,activation='relu')(embedding_layer)
-    model1= Conv1D(64, 5,activation='relu')(model1)
+    model1=Conv1D(128, 5,activation='relu')(model1)
+    model1= Conv1D(128, 5,activation='relu')(model1)
     model1 = Activation('relu')(model1)
     model1 =MaxPooling1D(2)(model1)
     model1 = Dropout(0.2)(model1)
@@ -509,7 +516,7 @@ le = LabelEncoder()
 mylabels = le.fit_transform(labels)
 X = myData
 y = mylabels
-kf = KFold(n_splits=10)
+#kf = KFold(n_splits=10)
 losses = []
 exactitudeTab = []
 precisionTab = []
@@ -519,11 +526,12 @@ seed = 7
 np.random.seed(seed)
 #myDatatest=data.loc[:,'article_content']
 #labelstest=data.loc[:,'labels']
-x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
+x_train,x_test,y_train,y_test = train_test_split(x,y, test_size=0.2)
 #myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(myData,myDatatest)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
-textData = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
-textLabel = np.concatenate((y_train, y_test), axis=0)
+textData = np.concatenate(myData_train_Glove, myData_test_Glove)
+#textLabel = np.concatenate((y_train, y_test), axis=0)
+textLabel = np.concatenate(y_train, y_test)
 print("debut des k-fold")
 #text = myData_train_Glove
 #mylabels = mylabels
@@ -552,21 +560,21 @@ for mean, stdev, param in zip(means, stds, params):
 kf = KFold(n_splits=5)
 for train, test in kf.split(textData,textLabel) :
   model = cnn_bilstm(word_index, embeddings_dict)
-  history1 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
+  history1 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
   results1 = model.evaluate(textData[test],textLabel[test],verbose=0)
   model = cnn_lstm(word_index, embeddings_dict)
-  history2 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64,verbose=0)
+  history2 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64,verbose=0)
   results2 = model.evaluate(textData[test],textLabel[test],verbose=0)
   model = vdc_lstm(word_index, embeddings_dict)
-  history3 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
+  history3 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
   results3 = model.evaluate(textData[test],textLabel[test],verbose=0)
   #model = dann(word_index, embeddings_dict)
-  #history4 = model.fit(text[train], mylabels[train],validation_data=(myDatatest,labelstest), epochs=10, batch_size=64, verbose=0)
+  #history4 = model.fit(text[train], mylabels[train],validation_data=(textData[test], textLabel[test]), epochs=10, batch_size=64, verbose=0)
   #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = dlstm(word_index, embeddings_dict)
-  history5 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
+  history5 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
   results5 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  model = dann(word_index, embeddings_dict)
+  #model = dann(word_index, embeddings_dict)
   #history6 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
   #results6 = model.evaluate(textData[test],textLabel[test],verbose=0)
   plot_graphs(history1, history2,history3,history5,'accuracy')
