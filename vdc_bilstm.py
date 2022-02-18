@@ -24,7 +24,7 @@ import re, string, unicodedata
 from nltk import word_tokenize, sent_tokenize
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
-from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation,GlobalMaxPooling1D,LeakyReLU,concatenate
+from keras.layers import Dropout, Dense, Embedding, LSTM, Bidirectional,Conv1D,MaxPooling1D,Flatten,Activation,GlobalMaxPooling1D,LeakyReLU,concatenate,LayerNormalization
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
@@ -363,16 +363,33 @@ def dlstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=10
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
-    model1 = LSTM(256)(embedding_layer)
+    model1 = LSTM(256,return_sequences=True)(embedding_layer)
+    model1 = LayerNormalization()(model1)
+    #model1 = Dropout(0.2)(model1)
+    model1 = LSTM(256,return_sequences=True)(model1)
+    model1 = LayerNormalization()(model1)
+    #model1 = Dropout(0.2)(model1)
+    model1 = LSTM(256)(model1)
+    model1 = LayerNormalization()(model1)
+    #model1 = Dropout(0.2)(model1)
     model1 = Dense(256,activation='relu')(model1)
     model1 = Dropout(0.2)(model1)
-    model2 = LSTM(256)(embedding_layer)
+    
+    model2 = LSTM(32,return_sequences=True)(embedding_layer)
+    model2 = LayerNormalization()(model2)
+    #model2 = Dropout(0.2)(model2)
+    model2 = LSTM(32,return_sequences=True)(model2)
+    model2 = LayerNormalization()(model2)
+    model2 = LSTM(32)(model2)
+    model2 = LayerNormalization()(model2)
     model2 = Dense(256,activation='relu')(model2)
-    model2 = Dropout(0.2)(model2)
+    #model1 = Dropout(0.2)(model1)
+   
+
     dense_concat = concatenate([model1, model2])
     attention_prob = Dense(64,activation = 'relu')(dense_concat)
-    attention_mul = concatenate([dense_concat, attention_prob])
-    modelfinal = Dense(1,activation='sigmoid')(attention_mul)
+    #attention_mul = concatenate([dense_concat, attention_prob])
+    modelfinal = Dense(1,activation='sigmoid')(attention_prob)
     model = keras.Model(inputs=input,outputs=modelfinal)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
@@ -559,7 +576,7 @@ for mean, stdev, param in zip(means, stds, params):
 
 kf = KFold(n_splits=5)
 for train, test in kf.split(textData,textLabel) :
-  model = cnn_bilstm(word_index, embeddings_dict)
+  """model = cnn_bilstm(word_index, embeddings_dict)
   history1 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
   results1 = model.evaluate(textData[test],textLabel[test],verbose=0)
   model = cnn_lstm(word_index, embeddings_dict)
@@ -567,7 +584,7 @@ for train, test in kf.split(textData,textLabel) :
   results2 = model.evaluate(textData[test],textLabel[test],verbose=0)
   model = vdc_lstm(word_index, embeddings_dict)
   history3 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
-  results3 = model.evaluate(textData[test],textLabel[test],verbose=0)
+  results3 = model.evaluate(textData[test],textLabel[test],verbose=0)"""
   #model = dann(word_index, embeddings_dict)
   #history4 = model.fit(text[train], mylabels[train],validation_data=(textData[test], textLabel[test]), epochs=10, batch_size=64, verbose=0)
   #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
@@ -577,13 +594,13 @@ for train, test in kf.split(textData,textLabel) :
   #model = dann(word_index, embeddings_dict)
   #history6 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
   #results6 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  plot_graphs(history1, history2,history3,history5,'accuracy')
+  """plot_graphs(history1, history2,history3,history5,'accuracy')
   plot_graphs2(history1, history2,history3,history5,'val_accuracy')
-  plot_graphs(history1,history2,history3,history5, 'loss')
+  plot_graphs(history1,history2,history3,history5, 'loss')"""
   #exactitudeTab.append(results[1])
   #precisionTab.append(results[2])
   #rappelTab.append(results[3])
-  print('cnn_bilstm')
+  """print('cnn_bilstm')
   print(results1[1])
   print(results1[2])
   print(results1[3])
@@ -594,7 +611,7 @@ for train, test in kf.split(textData,textLabel) :
   print('vdc_lstm')
   print(results3[1])
   print(results3[2])
-  print(results3[3])
+  print(results3[3])"""
   #print('dann')
   #print(results4[1])
   #print(results4[2])
