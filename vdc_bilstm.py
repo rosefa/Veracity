@@ -129,6 +129,18 @@ def lemmatize_text(words):
 def normalize_number(text):
     replaced_text = re.sub(r'\d+', '0', text)
     return replaced_text
+def replace_numbers(words):
+    """Replace all interger occurrences in list of tokenized words with textual representation"""
+    p = inflect.engine()
+    new_words = []
+    for word in words:
+        if word.isdigit():
+            new_word = p.number_to_words(word)
+            new_words.append(new_word)
+        else:
+            new_words.append(word)
+    text = ' '.join([x for x in new_words])
+    return text
 #**********************PRETRAITEMENT**************************
 def text_prepare(text):
     text_traite = clean_text(text)
@@ -137,7 +149,7 @@ def text_prepare(text):
     text_traite = remove_stopwords(text_traite)
     text_traite = remove_punctuation(text_traite)
     text_traite = normalize_unicode(text_traite,form='NFKC')
-    text_traite = normalize_number(text_traite)
+    text_traite = replace_numbers(text_traite)
     text_traite = lemmatize_text(text_traite)
     return text_traite
 '''def clean_html_and_js_tags(html_text):
@@ -364,24 +376,24 @@ def dlstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=10
     embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     # Add hidden layers 
     model1 = LSTM(256,return_sequences=True)(embedding_layer)
-    model1 = LayerNormalization()(model1)
+    #model1 = LayerNormalization()(model1)
     #model1 = Dropout(0.2)(model1)
     model1 = LSTM(256,return_sequences=True)(model1)
-    model1 = LayerNormalization()(model1)
+    #model1 = LayerNormalization()(model1)
     #model1 = Dropout(0.2)(model1)
     model1 = LSTM(256)(model1)
-    model1 = LayerNormalization()(model1)
+    #model1 = LayerNormalization()(model1)
     #model1 = Dropout(0.2)(model1)
     model1 = Dense(256,activation='relu')(model1)
     model1 = Dropout(0.2)(model1)
     
     model2 = LSTM(32,return_sequences=True)(embedding_layer)
-    model2 = LayerNormalization()(model2)
+    #model2 = LayerNormalization()(model2)
     #model2 = Dropout(0.2)(model2)
     model2 = LSTM(32,return_sequences=True)(model2)
-    model2 = LayerNormalization()(model2)
+    #model2 = LayerNormalization()(model2)
     model2 = LSTM(32)(model2)
-    model2 = LayerNormalization()(model2)
+    #model2 = LayerNormalization()(model2)
     model2 = Dense(256,activation='relu')(model2)
     #model1 = Dropout(0.2)(model1)
    
@@ -589,7 +601,7 @@ for train, test in kf.split(textData,textLabel) :
   #history4 = model.fit(text[train], mylabels[train],validation_data=(textData[test], textLabel[test]), epochs=10, batch_size=64, verbose=0)
   #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
   model = dlstm(word_index, embeddings_dict)
-  history5 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
+  history5 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=60, batch_size=64, verbose=1)
   results5 = model.evaluate(textData[test],textLabel[test],verbose=0)
   #model = dann(word_index, embeddings_dict)
   #history6 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
