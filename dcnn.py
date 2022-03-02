@@ -147,7 +147,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 acc = []
 loss = []
-def buldmodel(learn_rate=0.01, momentum=0):
+def buldmodel(learning_rate=0.01, momentum=0):
     model = Sequential()
     model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D(2))
@@ -167,7 +167,7 @@ def buldmodel(learn_rate=0.01, momentum=0):
     #model.add(BatchNormalization())
     model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    optimizer = tf.keras.optimizers.RMSprop(lr=learn_rate, momentum=momentum)
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learning_rate, momentum=momentum)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
     return model
 # definition du modèle CONV1D et LSTM
@@ -178,9 +178,9 @@ X = np.concatenate((embeddings_train,embeddings_test), axis=0)
 Y = np.concatenate((Y_train, Y_test), axis=0)
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
-learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
+learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
 momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
-param_grid = dict(learn_rate=learn_rate, momentum=momentum)
+param_grid = dict(learning_rate=learning_rate, momentum=momentum)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(X, Y)
 # summarize results
