@@ -8,6 +8,7 @@ import wget
 #nltk.download('omw-1.4')
 from numpy import asarray
 from numpy import zeros
+from keras.optimizers import RMSprop
 from tensorflow.keras.layers import TextVectorization
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras import layers
