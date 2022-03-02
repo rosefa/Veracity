@@ -147,18 +147,18 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 acc = []
 loss = []
-def buldmodel(kernel_size=2):
+def buldmodel():
     model = Sequential()
-    model.add(Conv1D(256, kernel_size=kernel_size, activation='relu',input_shape=(512, 1)))
+    model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(256, kernel_size=kernel_size, activation='relu'))
+    model.add(layers.Conv1D(256, 3, activation='relu'))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(128, kernel_size=kernel_size,activation='relu'))
+    model.add(layers.Conv1D(128, 3,activation='relu'))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(128, kernel_size=kernel_size,activation='relu'))
+    model.add(layers.Conv1D(128, 3,activation='relu'))
     model.add(layers.MaxPooling1D(2))
     model.add(BatchNormalization())
     model.add(layers.LSTM(64))
@@ -173,23 +173,25 @@ def buldmodel(kernel_size=2):
 # definition du modèle CONV1D et LSTM
 seed = 7
 np.random.seed(seed)
-model = KerasClassifier(build_fn=buldmodel, epochs=50, batch_size=40, verbose=0)
+#model = KerasClassifier(build_fn=buldmodel, epochs=50, batch_size=40, verbose=1)
+model = buldmodel()
 X = np.concatenate((embeddings_train,embeddings_test), axis=0)
 Y = np.concatenate((Y_train, Y_test), axis=0)
+model.fit(X, Y, epochs=50, batch_size=40, verbose=1)
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
 #momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
 #param_grid = dict(learning_rate=learning_rate, momentum=momentum)
-kernel_size = [2, 3,4,5,7]
-param_grid = dict(kernel_size=kernel_size)
-grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
-grid_result = grid.fit(X, Y)
+#kernel_size = [2, 3,4,5,7]
+#param_grid = dict(kernel_size=kernel_size)
+#grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
+#grid_result = grid.fit(X, Y)
 # summarize results
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-means = grid_result.cv_results_['mean_test_score']
-stds = grid_result.cv_results_['std_test_score']
-params = grid_result.cv_results_['params']
-for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))
+#means = grid_result.cv_results_['mean_test_score']
+#stds = grid_result.cv_results_['std_test_score']
+#params = grid_result.cv_results_['params']
+#for mean, stdev, param in zip(means, stds, params):
+    #print("%f (%f) with: %r" % (mean, stdev, param))
 
