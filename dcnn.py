@@ -177,7 +177,10 @@ np.random.seed(seed)
 model = buldmodel()
 X = np.concatenate((embeddings_train,embeddings_test), axis=0)
 Y = np.concatenate((Y_train, Y_test), axis=0)
-model.fit(X, Y, epochs=50, batch_size=40, verbose=1)
+model.fit(embeddings_train, Y_train, epochs=50, batch_size=40, verbose=1)
+results = model.evaluate(embeddings_test, Y_test, verbose=2)
+for name, value in zip (model.metrics_names, results) : 
+  print("%s: %.3f" % (name, value))
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
@@ -188,7 +191,7 @@ model.fit(X, Y, epochs=50, batch_size=40, verbose=1)
 #grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 #grid_result = grid.fit(X, Y)
 # summarize results
-print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+#print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 #means = grid_result.cv_results_['mean_test_score']
 #stds = grid_result.cv_results_['std_test_score']
 #params = grid_result.cv_results_['params']
