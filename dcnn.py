@@ -47,11 +47,21 @@ import tensorflow_hub as hub
 data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 myData=data.loc[:,'article_content']
 labels=data.loc[:,'labels']
+dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
+datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
 
-#encoded label data
-le = preprocessing.LabelEncoder()
-le.fit(labels)
-myLabel= le.transform(labels)
+i=0
+j=0
+myLabel=[]
+while i<len(dataf1):
+  myLabel.append(0)
+  i=i+1
+while j<len(datav1):
+  myLabel.append(1)
+  j=j+1
+data = pd.concat([dataf1['text'], datav1['text']])
+
+
 def clean_text(text):
     replaced_text = '\n'.join(s.strip() for s in text.splitlines()[2:] if s != '')  # skip header by [2:]
     replaced_text = replaced_text.lower()
@@ -133,20 +143,20 @@ def normalize_text(words):
     # Tokenize tweet into words
 def tokenize(text):
     return nltk.word_tokenize(text)
-X_train, X_test, Y_train, Y_test = train_test_split(myData, myLabel, test_size = 0.2)
-inputs = np.concatenate((X_train, X_test), axis=0)
-targets = np.concatenate((Y_train, Y_test), axis=0)
+#X_train, X_test, Y_train, Y_test = train_test_split(myData, myLabel, test_size = 0.2)
+#inputs = np.concatenate((X_train, X_test), axis=0)
+#targets = np.concatenate((Y_train, Y_test), axis=0)
 
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 embeddings_test = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-train=embeddings_train(X_train)
-test=embeddings_test(X_test)
+train=embeddings_train(data)
+test=embeddings_test(myData)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
-inputs = np.concatenate((embeddings_train, embeddings_test), axis=0)
-targets = np.concatenate((Y_train, Y_test), axis=0)
+#inputs = np.concatenate((embeddings_train, embeddings_test), axis=0)
+#targets = np.concatenate((Y_train, Y_test), axis=0)
 acc = []
 loss = []
 model = Sequential()
@@ -170,8 +180,8 @@ model.add(Dense(1, activation="sigmoid"))
 
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
-model.fit(inputs, targets, epochs=50, batch_size=40, verbose=1)
-results = model.evaluate(inputs, targets, verbose=2)
+model.fit(embeddings_train, myLabel, epochs=50, batch_size=40, verbose=1)
+results = model.evaluate(embeddings_test, labels, verbose=2)
 for name, value in zip (model.metrics_names, results) : 
   print("%s: %.3f" % (name, value))
 #batch_size = [5,10, 20, 40, 50,60]
