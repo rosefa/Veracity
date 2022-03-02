@@ -145,6 +145,8 @@ train=embeddings_train(X_train)
 test=embeddings_test(X_test)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
+inputs = np.concatenate((embeddings_train, embeddings_test), axis=0)
+targets = np.concatenate((Y_train, Y_test), axis=0)
 acc = []
 loss = []
 model = Sequential()
@@ -168,8 +170,8 @@ model.add(Dense(1, activation="sigmoid"))
 
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
-model.fit(embeddings_train, Y_train, epochs=50, batch_size=40, verbose=1)
-results = model.evaluate(embeddings_test, Y_test, verbose=2)
+model.fit(inputs, targets, epochs=50, batch_size=40, verbose=1)
+results = model.evaluate(inputs, targets, verbose=2)
 for name, value in zip (model.metrics_names, results) : 
   print("%s: %.3f" % (name, value))
 #batch_size = [5,10, 20, 40, 50,60]
