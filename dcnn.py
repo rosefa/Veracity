@@ -177,7 +177,7 @@ Y = np.concatenate((Y_train, Y_test), axis=0)
 batch_size = [5,10, 20, 40, 50,60]
 epochs = [10,20, 50, 60]
 param_grid = dict(batch_size=batch_size, epochs=epochs)
-grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
+grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=5)
 grid_result = grid.fit(X, Y)
 # summarize results
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
