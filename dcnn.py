@@ -146,7 +146,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 acc = []
 loss = []
-def buldmodel():
+def buldmodel(optimizer='adam'):
     model = Sequential()
     model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D(2))
@@ -166,16 +166,17 @@ def buldmodel():
     #model.add(BatchNormalization())
     model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
     return model
 # definition du modèle CONV1D et LSTM
 
-model = KerasClassifier(build_fn=buldmodel, verbose=0)
+model = KerasClassifier(build_fn=buldmodel, epochs=50, batch_size=40, verbose=0)
 X = np.concatenate((embeddings_train,embeddings_test), axis=0)
 Y = np.concatenate((Y_train, Y_test), axis=0)
-batch_size = [5,10, 20, 40, 50,60]
-epochs = [10,20, 50, 60]
-param_grid = dict(batch_size=batch_size, epochs=epochs)
+#batch_size = [5,10, 20, 40, 50,60]
+#epochs = [10,20, 50, 60]
+optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
+param_grid = dict(optimizer=optimizer)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(X, Y)
 # summarize results
