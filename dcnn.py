@@ -147,23 +147,23 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 acc = []
 loss = []
-def buldmodel(dropout_rate=0.0):
+def buldmodel(kernel_size=2):
     model = Sequential()
-    model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
+    model.add(Conv1D(256, kernel_size=kernel_size, activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(256, 3, activation='relu'))
+    model.add(layers.Conv1D(256, kernel_size=kernel_size, activation='relu'))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(128, 3,activation='relu'))
+    model.add(layers.Conv1D(128, kernel_size=kernel_size,activation='relu'))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
-    model.add(layers.Conv1D(128, 3,activation='relu'))
+    model.add(layers.Conv1D(128, kernel_size=kernel_size,activation='relu'))
     model.add(layers.MaxPooling1D(2))
     model.add(BatchNormalization())
     model.add(layers.LSTM(64))
     #model.add(layers.Flatten())
-    model.add(layers.Dropout(dropout_rate))
+    model.add(layers.Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(512,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
@@ -181,8 +181,8 @@ Y = np.concatenate((Y_train, Y_test), axis=0)
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
 #momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
 #param_grid = dict(learning_rate=learning_rate, momentum=momentum)
-dropout_rate = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-param_grid = dict(dropout_rate=dropout_rate)
+kernel_size = [2, 3,4,5,7]
+param_grid = dict(kernel_size=kernel_size)
 grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
 grid_result = grid.fit(X, Y)
 # summarize results
