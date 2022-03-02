@@ -61,7 +61,8 @@ while j<len(datav1):
   j=j+1
 #data = pd.concat([dataf1['text'], datav1['text']])
 data = np.concatenate((dataf1['text'], datav1['text']), axis=0)
-
+le = LabelEncoder()
+mylabels = le.fit_transform(myLabel)
 
 def clean_text(text):
     replaced_text = '\n'.join(s.strip() for s in text.splitlines()[2:] if s != '')  # skip header by [2:]
