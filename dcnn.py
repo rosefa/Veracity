@@ -59,7 +59,8 @@ while i<len(dataf1):
 while j<len(datav1):
   myLabel.append(1)
   j=j+1
-data = pd.concat([dataf1['text'], datav1['text']])
+#data = pd.concat([dataf1['text'], datav1['text']])
+data = np.concatenate(([dataf1['text'], datav1['text']), axis=0)
 
 
 def clean_text(text):
