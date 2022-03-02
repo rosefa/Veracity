@@ -33,6 +33,8 @@ from sklearn.ensemble import AdaBoostClassifier,BaggingClassifier,GradientBoosti
 from sklearn.metrics import accuracy_score
 #from keras.wrappers.scikit_learn import KerasRegressor
 #from scikeras.wrappers import KerasClassifier, KerasRegressor
+from sklearn.model_selection import GridSearchCV
+from keras.wrappers.scikit_learn import KerasClassifier
 import tensorflow as tf 
 import io
 #import chardet
@@ -167,6 +169,21 @@ model.add(layers.Dense(512, activation='relu'))
 model.add(Dense(1, activation="sigmoid"))
 
 #formation et évaluation du modèle
+
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
-model.fit(embeddings_train, Y_train, epochs=15, batch_size=64, verbose=1)
-results = model.evaluate(embeddings_test, Y_test, verbose=2)
+model = KerasClassifier(build_fn=model, verbose=0)
+X = np.concatenate((embeddings_train,embeddings_test), axis=0)
+Y = np.concatenate((Y_train, Y_test), axis=0)
+batch_size = [5,10, 20, 40, 50,60]
+epochs = [10,20, 50, 60]
+param_grid = dict(batch_size=batch_size, epochs=epochs)
+grid = GridSearchCV(estimator=model, param_grid=param_grid, n_jobs=-1, cv=3)
+grid_result = grid.fit(X, Y)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+    print("%f (%f) with: %r" % (mean, stdev, param))
+
