@@ -50,6 +50,8 @@ myData=data.loc[:,'article_content']
 labels=data.loc[:,'labels']
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
+dataf1 = dataf1.loc[:,'text']
+datav1 = datav1.loc[:,'text']
 
 i=0
 j=0
@@ -60,10 +62,8 @@ while i<len(dataf1):
 while j<len(datav1):
   myLabel.append(1)
   j=j+1
-#data = pd.concat([dataf1['text'], datav1['text']])
-data = np.concatenate((dataf1['text'], datav1['text']), axis=0)
-le = LabelEncoder()
-mylabels = le.fit_transform(myLabel)
+#data = pd.concat([dataf1, datav1])
+
 
 def clean_text(text):
     replaced_text = '\n'.join(s.strip() for s in text.splitlines()[2:] if s != '')  # skip header by [2:]
@@ -149,6 +149,9 @@ def tokenize(text):
 #X_train, X_test, Y_train, Y_test = train_test_split(myData, myLabel, test_size = 0.2)
 #inputs = np.concatenate((X_train, X_test), axis=0)
 #targets = np.concatenate((Y_train, Y_test), axis=0)
+data = np.concatenate((dataf1, datav1), axis=0)
+le = LabelEncoder()
+mylabels = le.fit_transform(myLabel)
 
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 
@@ -183,7 +186,7 @@ model.add(Dense(1, activation="sigmoid"))
 
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
-model.fit(embeddings_train, myLabel, epochs=50, batch_size=40, verbose=1)
+model.fit(embeddings_train, mylabels, epochs=50, batch_size=40, verbose=1)
 results = model.evaluate(embeddings_test, labels, verbose=2)
 for name, value in zip (model.metrics_names, results) : 
   print("%s: %.3f" % (name, value))
