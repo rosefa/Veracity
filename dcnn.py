@@ -35,7 +35,7 @@ from sklearn.metrics import accuracy_score
 #from scikeras.wrappers import KerasClassifier, KerasRegressor
 import tensorflow as tf 
 import io
-import chardet
+#import chardet
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
