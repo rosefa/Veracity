@@ -8,7 +8,7 @@ import wget
 #nltk.download('omw-1.4')
 from numpy import asarray
 from numpy import zeros
-from keras.optimizers import RMSprop
+
 from tensorflow.keras.layers import TextVectorization
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras import layers
@@ -167,7 +167,7 @@ def buldmodel(learn_rate=0.01, momentum=0):
     #model.add(BatchNormalization())
     model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    optimizer = RMSprop(lr=learn_rate, momentum=momentum)
+    optimizer = tf.keras.optimizers.RMSprop(lr=learn_rate, momentum=momentum)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
     return model
 # definition du modèle CONV1D et LSTM
