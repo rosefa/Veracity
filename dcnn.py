@@ -157,11 +157,26 @@ model.add(Dense(1, activation="sigmoid"))
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
 
-dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-myDataTest=dataTest.loc[:,'article_content']
-labelsTest=dataTest.loc[:,'labels']
-dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
-datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
+#dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+dataTest = pd.read_csv('FAKESDataset.csv')
+data = dataTest[['article_content', 'labels']]
+data.columns =  ['article_content', 'labels']
+pos = []
+neg = []
+for l in data.labels:
+    if l == 0:
+        pos.append(0)
+        neg.append(1)
+    elif l == 1:
+        pos.append(1)
+        neg.append(0)
+data['Pos']= pos
+data['Neg']= neg
+print(data.head())
+#myDataTest=dataTest.loc[:,'article_content']
+#labelsTest=dataTest.loc[:,'labels']
+'''dataf1 = pd.read_csv('Pasvrai-1.csv')
+datav1 = pd.read_csv('Vrai-1.csv')
 dataf1 = dataf1.loc[:,'text']
 datav1 = datav1.loc[:,'text']
 i=0
@@ -198,7 +213,7 @@ for p in range(101) :
 print(statistics.mean(acc),statistics.mean(prec),statistics.mean(rap))
 print(acc)
 print(prec)
-print(rap)
+print(rap)'''
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
