@@ -189,12 +189,12 @@ for p in range(101) :
   embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
   model.fit(embeddings_train, labelsTrain, epochs=50, batch_size=40, verbose=0)
   results = model.evaluate(embeddings_test, labelsTest, verbose=2)
-print('****************************************************************************')
-  #for name, value in zip (model.metrics_names, results) : 
-    #print("%s: %.3f" % (name, value))
+  print('****************************************************************************')
   acc.append(results[1])
   prec.append(results[2])
   rap.append(results[3])
+  #for name, value in zip (model.metrics_names, results) : 
+    #print("%s: %.3f" % (name, value))
 print(statistics.mean(acc),statistics.mean(prec),statistics.mean(rap))
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
