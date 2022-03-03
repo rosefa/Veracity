@@ -47,8 +47,6 @@ import tensorflow_hub as hub
 import statistics
 
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
-embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-embeddings_test = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 
 #data = pd.concat([dataf1, datav1])
 
@@ -182,7 +180,8 @@ for p in range(101) :
   dataTrain = np.concatenate((dataf1, datav1), axis=0)
   le = LabelEncoder()
   labelsTrain = le.fit_transform(myLabel)
-
+  embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+  embeddings_test = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
   train=embeddings_train(dataTrain)
   test=embeddings_test(myDataTest)
   embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
