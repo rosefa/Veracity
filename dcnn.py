@@ -157,8 +157,8 @@ model.add(Dense(1, activation="sigmoid"))
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
 
-#dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-dataTest = pd.read_csv('FAKESDataset.csv')
+dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+#dataTest = pd.read_csv('FAKESDataset.csv')
 data = dataTest[['article_content', 'labels']]
 data.columns =  ['article_content', 'labels']
 pos = []
