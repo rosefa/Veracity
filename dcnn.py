@@ -44,6 +44,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
+import statistics
 
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
@@ -174,7 +175,9 @@ while i<len(dataf1):
 while j<len(datav1):
   myLabel.append(1)
   j=j+1
-
+acc = []
+prec = []
+rap = []
 for p in range(101) :
   dataTrain = np.concatenate((dataf1, datav1), axis=0)
   le = LabelEncoder()
@@ -184,12 +187,15 @@ for p in range(101) :
   test=embeddings_test(myDataTest)
   embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
   embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
-  acc = []
-  loss = []
   model.fit(embeddings_train, labelsTrain, epochs=50, batch_size=40, verbose=0)
   results = model.evaluate(embeddings_test, labelsTest, verbose=2)
-  for name, value in zip (model.metrics_names, results) : 
-    print("%s: %.3f" % (name, value))
+print('****************************************************************************')
+  #for name, value in zip (model.metrics_names, results) : 
+    #print("%s: %.3f" % (name, value))
+  acc.append(results[1])
+  prec.append(results[2])
+  rap.append(results[3])
+print(statistics.mean(acc),statistics.mean(prec),statistics.mean(rap))
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
