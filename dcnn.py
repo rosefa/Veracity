@@ -173,7 +173,7 @@ for l in data.labels:
 data['Pos']= pos
 data['Neg']= neg
 data_train, data_test = train_test_split(data, test_size=0.10, random_state=42)
-#module_url = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
+embed = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
 #embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 #embed = hub.Module(module_url)
 embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
