@@ -45,23 +45,10 @@ from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
 
-data = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-myData=data.loc[:,'article_content']
-labels=data.loc[:,'labels']
-dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
-datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
-dataf1 = dataf1.loc[:,'text']
-datav1 = datav1.loc[:,'text']
+embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+embeddings_test = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 
-i=0
-j=0
-myLabel=[]
-while i<len(dataf1):
-  myLabel.append(0)
-  i=i+1
-while j<len(datav1):
-  myLabel.append(1)
-  j=j+1
 #data = pd.concat([dataf1, datav1])
 
 
@@ -149,22 +136,7 @@ def tokenize(text):
 #X_train, X_test, Y_train, Y_test = train_test_split(myData, myLabel, test_size = 0.2)
 #inputs = np.concatenate((X_train, X_test), axis=0)
 #targets = np.concatenate((Y_train, Y_test), axis=0)
-data = np.concatenate((dataf1, datav1), axis=0)
-le = LabelEncoder()
-mylabels = le.fit_transform(myLabel)
 
-embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
-
-embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-embeddings_test = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-train=embeddings_train(data)
-test=embeddings_test(myData)
-embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
-embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
-#inputs = np.concatenate((embeddings_train, embeddings_test), axis=0)
-#targets = np.concatenate((Y_train, Y_test), axis=0)
-acc = []
-loss = []
 model = Sequential()
 model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
 model.add(layers.MaxPooling1D(2))
@@ -183,13 +155,41 @@ model.add(layers.Dropout(0.2))
 #model.add(BatchNormalization())
 model.add(layers.Dense(512, activation='relu'))
 model.add(Dense(1, activation="sigmoid"))
-
 #formation et évaluation du modèle
 model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
-model.fit(embeddings_train, mylabels, epochs=50, batch_size=40, verbose=1)
-results = model.evaluate(embeddings_test, labels, verbose=2)
-for name, value in zip (model.metrics_names, results) : 
-  print("%s: %.3f" % (name, value))
+
+dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+myDataTest=dataTest.loc[:,'article_content']
+labelsTest=dataTest.loc[:,'labels']
+dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
+datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
+dataf1 = dataf1.loc[:,'text']
+datav1 = datav1.loc[:,'text']
+i=0
+j=0
+myLabel=[]
+while i<len(dataf1):
+  myLabel.append(0)
+  i=i+1
+while j<len(datav1):
+  myLabel.append(1)
+  j=j+1
+
+for p in range(101) :
+  dataTrain = np.concatenate((dataf1, datav1), axis=0)
+  le = LabelEncoder()
+  labelsTrain = le.fit_transform(myLabel)
+
+  train=embeddings_train(dataTrain)
+  test=embeddings_test(myDataTest)
+  embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
+  embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
+  acc = []
+  loss = []
+  model.fit(embeddings_train, labelsTrain, epochs=50, batch_size=40, verbose=0)
+  results = model.evaluate(embeddings_test, labelsTest, verbose=2)
+  for name, value in zip (model.metrics_names, results) : 
+    print("%s: %.3f" % (name, value))
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
