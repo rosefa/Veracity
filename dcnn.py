@@ -194,7 +194,11 @@ for p in range(101) :
   rap.append(results[3])
   #for name, value in zip (model.metrics_names, results) : 
     #print("%s: %.3f" % (name, value))
+
 print(statistics.mean(acc),statistics.mean(prec),statistics.mean(rap))
+print(acc)
+print(prec)
+print(rap)
 #batch_size = [5,10, 20, 40, 50,60]
 #epochs = [10,20, 50, 60]
 #learning_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
