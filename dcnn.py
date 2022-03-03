@@ -46,7 +46,7 @@ from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
 import statistics
 
-embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+#embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 
 #data = pd.concat([dataf1, datav1])
 
@@ -136,7 +136,7 @@ def tokenize(text):
 #inputs = np.concatenate((X_train, X_test), axis=0)
 #targets = np.concatenate((Y_train, Y_test), axis=0)
 
-model = Sequential()
+'''model = Sequential()
 model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
 model.add(layers.MaxPooling1D(2))
 #model.add(BatchNormalization())
@@ -155,7 +155,7 @@ model.add(layers.Dropout(0.2))
 model.add(layers.Dense(512, activation='relu'))
 model.add(Dense(1, activation="sigmoid"))
 #formation et évaluation du modèle
-model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
+model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])'''
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 #dataTest = pd.read_csv('FAKESDataset.csv')
@@ -172,8 +172,33 @@ for l in data.labels:
         neg.append(0)
 data['Pos']= pos
 data['Neg']= neg
-print(data.head())
-#myDataTest=dataTest.loc[:,'article_content']
+data_train, data_test = train_test_split(data, test_size=0.10, random_state=42)
+module_url = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
+embed = hub.Module(module_url)
+with tf.Session() as session:
+    session.run([tf.global_variables_initializer(), 
+                 tf.tables_initializer()])
+    training_embeddings = session.run(embed(data_train.Text.to_list()))
+model = Sequential()
+model.add(Dense(128, activation = 'relu'))
+model.add(Dense(2, activation = 'softmax'))
+model.compile(loss='binary_crossentropy', 
+              optimizer='adam',
+              metrics=['acc'])
+history = model.fit(training_embeddings, 
+                    data_train[label_names].values, 
+                    epochs=50, 
+                    validation_split=0.1, 
+                    shuffle=True, 
+                    batch_size=40)    
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+    #myDataTest=dataTest.loc[:,'article_content']
 #labelsTest=dataTest.loc[:,'labels']
 '''dataf1 = pd.read_csv('Pasvrai-1.csv')
 datav1 = pd.read_csv('Vrai-1.csv')
