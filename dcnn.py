@@ -178,9 +178,9 @@ embed = "https://tfhub.dev/google/universal-sentence-encoder-large/2"
 #embed = hub.Module(module_url)
 embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 #train=embed(data_train)
-with tf.Session() as session:
-    session.run([tf.global_variables_initializer(), 
-                 tf.tables_initializer()])
+with tf.compat.v1.Session() as session:
+    session.run([tf.compat.v1.global_variables_initializer(), 
+                 tf.compat.v1.tables_initializer()])
     training_embeddings = session.run(embed(data_train))
 model = Sequential()
 model.add(Dense(128, activation = 'relu'))
