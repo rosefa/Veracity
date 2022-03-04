@@ -176,19 +176,17 @@ data_train, data_test = train_test_split(data, test_size=0.10, random_state=42)
 embed = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
 #embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 #embed = hub.Module(module_url)
-#embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-#train=embed(data_train)
-with tf.compat.v1.Session() as session:
-    session.run([tf.compat.v1.global_variables_initializer(), 
-                 tf.compat.v1.tables_initializer()])
-    training_embeddings = session.run(embed(data_train))
+embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+train=embed(data_train)
+embeddings_train=np.array([np.reshape(embedd, (len(embedd), 1)) for embedd in train])
+
 model = Sequential()
 model.add(Dense(128, activation = 'relu'))
 model.add(Dense(2, activation = 'softmax'))
 model.compile(loss='binary_crossentropy', 
               optimizer='adam',
               metrics=['acc'])
-history = model.fit(training_embeddings, 
+history = model.fit(embeddings_train, 
                     data_train[label_names].values, 
                     epochs=50, 
                     validation_split=0.1, 
