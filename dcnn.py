@@ -180,7 +180,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 
 model = Sequential()
 model.add(Dense(128, activation = 'relu'))
-model.add(Dense(1, activation = sigmoid))
+model.add(Dense(1, activation = 'sigmoid'))
 model.compile(loss='binary_crossentropy', 
               optimizer='adam',
               metrics=['acc'])
