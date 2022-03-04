@@ -180,11 +180,11 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 
 model = Sequential()
 model.add(Dense(128, activation = 'relu'))
-model.add(Dense(2, activation = 'softmax'))
+model.add(Dense(1, activation = sigmoid))
 model.compile(loss='binary_crossentropy', 
               optimizer='adam',
               metrics=['acc'])
-history = model.fit(embeddings_train,data_train['target_names'].values,epochs=50,validation_split=0.1,shuffle=True,batch_size=40)    
+history = model.fit(embeddings_train,data_train['labels'].values,epochs=50,validation_split=0.1,shuffle=True,batch_size=40)    
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
 plt.title('model accuracy')
