@@ -150,10 +150,10 @@ def builModel ():
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
     #model.add(layers.LSTM(64,return_sequences=True))
-    model.add(layers.Bidirectional(LSTM(32,return_sequences=True)))
-    model.add(layers.LSTM(64))
-    model.add(layers.Dense(512, activation='relu'))
+    model.add(layers.Bidirectional(LSTM(32)))
+    #model.add(layers.LSTM(64))
     model.add(Dropout(0.2))
+    model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
