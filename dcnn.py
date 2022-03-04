@@ -176,7 +176,7 @@ data_train, data_test = train_test_split(data, test_size=0.10, random_state=42)
 embed = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
 #embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 #embed = hub.Module(module_url)
-embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+#embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 #train=embed(data_train)
 with tf.compat.v1.Session() as session:
     session.run([tf.compat.v1.global_variables_initializer(), 
