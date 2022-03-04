@@ -152,12 +152,12 @@ def builModel ():
     model.add(layers.MaxPooling1D(2))
     model.add(BatchNormalization())
     model.add(layers.LSTM(64))
-    model.add(layers.Dropout(0.2))
+    #model.add(layers.Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(128, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     #formation et évaluation du modèle
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy',tf.keras.metrics.Precision(),tf.keras.metrics.Recall()])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
@@ -185,7 +185,7 @@ embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
 model = builModel()
-model.fit(embeddings_train,data_train.labels,epochs=100,validation_data=(embeddings_test,data_test.labels),batch_size=20)   
+model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
 print(metrics.classification_report(data_test['labels'].values, predicted))
