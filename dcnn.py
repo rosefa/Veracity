@@ -157,6 +157,9 @@ def builModel ():
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
+def text_prepare(text):
+    mitext = clean_text(text)
+    return mitext
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 #dataTest = pd.read_csv('FAKESDataset.csv')
@@ -173,11 +176,14 @@ for l in data.labels:
         neg.append(0)
 data['Pos']= pos
 data['Neg']= neg
+
 data_train, data_test = train_test_split(data, test_size=0.3)
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-train = embeddings_train(data_train.article_content)
-test = embeddings_train(data_test.article_content)
+train = [text_prepare(x) for x in data_train.article_content]
+test = [text_prepare(x) for x in data_test.article_content]
+train = embeddings_train(train)
+test = embeddings_train(test)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
