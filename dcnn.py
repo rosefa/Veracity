@@ -147,12 +147,12 @@ def builModel ():
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
     model.add(layers.Bidirectional(LSTM(128)))
-    model.add(Dropout(0.2))
+    #model.add(Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(512, activation='relu'))
     #model.add(Dropout(0.2))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.003), metrics=['accuracy'])
     return model
 def text_prepare(text):
     mitext = clean_text(text)
