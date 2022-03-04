@@ -172,6 +172,7 @@ def builModel2 ():
     model.add(layers.Conv1D(64, 3,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
+    model.add(layers.Bidirectional(LSTM(128),merge_mode = 'sum'))
     model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
