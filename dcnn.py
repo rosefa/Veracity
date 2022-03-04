@@ -169,13 +169,12 @@ def builModel2 ():
     model.add(layers.Conv1D(128, 3,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Conv1D(128, 3,activation='relu'))
+    model.add(layers.Conv1D(64, 3,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(Dropout(0.2))
     model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.SGD(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
     return model
 def text_prepare(text):
     mitext = clean_text(text)
