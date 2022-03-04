@@ -151,7 +151,7 @@ def builModel ():
     #model.add(layers.LSTM(64))
     model.add(layers.Dense(128, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy','f1'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
