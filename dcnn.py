@@ -175,7 +175,7 @@ for l in data.labels:
         neg.append(0)
 data['Pos']= pos
 data['Neg']= neg
-data_train, data_test = train_test_split(data, test_size=0.20, random_state=42)
+data_train, data_test = train_test_split(data, test_size=0.3)
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 train = embeddings_train(data_train.article_content)
@@ -185,7 +185,7 @@ embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
 model = builModel()
-model.fit(embeddings_train,data_train['labels'].values,epochs=50,validation_data=(embeddings_test,data_test['labels'].values),batch_size=40)   
+model.fit(embeddings_train,data_train['labels'].values,epochs=10,validation_data=(embeddings_test,data_test['labels'].values),batch_size=64)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
 print(metrics.classification_report(data_test['labels'].values, predicted))
