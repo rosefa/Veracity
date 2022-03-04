@@ -150,7 +150,7 @@ def builModel ():
     model.add(layers.LSTM(64,return_sequences=True))
     model.add(layers.LSTM(64))
     model.add(layers.Dense(512, activation='relu'))
-    #model.add(Dropout(0.2))
+    model.add(Dropout(0.2))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
