@@ -160,7 +160,7 @@ def builModel ():
 def builModel2 ():
     model = Sequential()
     #model.add(Dropout(0.2))
-    model.add(Conv1D(256, 7,activation='relu',input_shape=(512, 1)))
+    model.add(Conv1D(256, 5,activation='relu',input_shape=(512, 1)))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.Conv1D(256, 5,activation='relu'))
@@ -169,13 +169,13 @@ def builModel2 ():
     model.add(layers.Conv1D(128, 3,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Conv1D(128, 2,activation='relu'))
+    model.add(layers.Conv1D(128, 3,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Dense(128, activation='relu'))
-    #model.add(Dropout(0.1))
+    model.add(Dropout(0.2))
+    model.add(layers.Dense(512, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.01), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.SGD(), metrics=['accuracy'])
     return model
 def text_prepare(text):
     mitext = clean_text(text)
