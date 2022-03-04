@@ -41,6 +41,7 @@ import tensorflow as tf
 import io
 #import chardet
 from sklearn import preprocessing
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
@@ -137,7 +138,7 @@ def tokenize(text):
 #targets = np.concatenate((Y_train, Y_test), axis=0)
 def builModel ():
     model = Sequential()
-    model.add(Dropout(0.2))
+    #model.add(Dropout(0.2))
     model.add(Conv1D(256, 5, activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D(2))
     #model.add(BatchNormalization())
@@ -184,7 +185,7 @@ embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
 model = builModel()
-model.fit(embeddings_train,data_train['labels'].values,epochs=50,validation_data=(embeddings_test,data_test['labels'].values),shuffle=True,batch_size=40)   
+model.fit(embeddings_train,data_train['labels'].values,epochs=50,validation_data=(embeddings_test,data_test['labels'].values),batch_size=40)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
 print(metrics.classification_report(data_test['labels'].values, predicted))
