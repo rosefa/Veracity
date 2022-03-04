@@ -157,6 +157,26 @@ def builModel ():
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.01), metrics=['accuracy'])
     return model
+def builModel2 ():
+    model = Sequential()
+    #model.add(Dropout(0.2))
+    model.add(Conv1D(256, 7,activation='relu',input_shape=(512, 1)))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.Conv1D(256, 5,activation='relu'))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.Conv1D(128, 3,activation='relu'))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.Conv1D(128, 2,activation='relu'))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.Dense(128, activation='relu'))
+    #model.add(Dropout(0.1))
+    model.add(Dense(1, activation="sigmoid"))
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.01), metrics=['accuracy'])
+    return model
 def text_prepare(text):
     mitext = clean_text(text)
     return mitext
@@ -188,7 +208,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
-model = builModel()
+model = builModel2()
 model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
