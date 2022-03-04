@@ -184,6 +184,11 @@ model.add(Dense(1, activation = 'sigmoid'))
 model.compile(loss='binary_crossentropy', 
               optimizer='adam',
               metrics=['acc'])
+estimator = KerasClassifier(build_fn=model, epochs=50, batch_size=40, verbose=1)
+kfold = StratifiedKFold(n_splits=10, shuffle=True)
+results = cross_val_score(estimator, embeddings_train,data_train['labels'].values, cv=kfold)
+print("Smaller: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+'''print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 history = model.fit(embeddings_train,data_train['labels'].values,epochs=50,validation_split=0.1,shuffle=True,batch_size=40)    
 plt.plot(history.history['acc'])
 plt.plot(history.history['val_acc'])
@@ -191,7 +196,7 @@ plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+plt.show()'''
     #myDataTest=dataTest.loc[:,'article_content']
 #labelsTest=dataTest.loc[:,'labels']
 '''dataf1 = pd.read_csv('Pasvrai-1.csv')
