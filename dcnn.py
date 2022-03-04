@@ -185,7 +185,7 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['acc'])
 history = model.fit(embeddings_train, 
-                    data_train[label_names].values, 
+                    data_train['labels'].values, 
                     epochs=50, 
                     validation_split=0.1, 
                     shuffle=True, 
