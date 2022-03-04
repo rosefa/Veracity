@@ -173,12 +173,10 @@ for l in data.labels:
 data['Pos']= pos
 data['Neg']= neg
 data_train, data_test = train_test_split(data, test_size=0.10, random_state=42)
-embed = "https://tfhub.dev/google/universal-sentence-encoder-large/2" 
-#embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
-#embed = hub.Module(module_url)
-embed = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-train=embed(data_train)
-embeddings_train=np.array([np.reshape(embedd, (len(embedd), 1)) for embedd in train])
+embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+train = embeddings_train(data_train.article_content)
+embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 
 model = Sequential()
 model.add(Dense(128, activation = 'relu'))
