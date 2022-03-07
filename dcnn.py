@@ -149,7 +149,7 @@ def builModel ():
     #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.Conv1D(128, 3))
-   " model.add(BatchNormalization())
+   #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
     model.add(layers.Bidirectional(LSTM(32)))
