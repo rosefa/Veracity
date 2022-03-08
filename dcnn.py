@@ -230,7 +230,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
-model = builModel3()
+model = builModel()
 model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
