@@ -152,7 +152,7 @@ def builModel ():
    #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
-    model.add(layers.Bidirectional(GRU(64, recurrente_dropout=0.2)))
+    model.add(layers.Bidirectional(GRU(64), recurrente_dropout=0.2))
     #model.add(Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(32, activation='relu'))
