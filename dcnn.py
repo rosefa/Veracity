@@ -139,6 +139,8 @@ def tokenize(text):
 def builModel ():
     model = Sequential()
     #model.add(Dropout(0.2))
+    model.add(layers.Bidirectional(LSTM(256,dropout=0.2,input_shape=(512, 1)),merge_mode = 'sum'))
+    #model.add(Flatten())
     model.add(Conv1D(256, 2,input_shape=(512, 1)))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
