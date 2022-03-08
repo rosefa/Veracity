@@ -152,7 +152,7 @@ def builModel ():
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
-    #model.add(layers.Bidirectional(LSTM(32),merge_mode = 'sum'))
+    model.add(layers.Bidirectional(LSTM(64),merge_mode = 'sum'))
     #model.add(Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(64, activation='relu'))
