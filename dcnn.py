@@ -141,7 +141,7 @@ def builModel ():
     #model.add(Dropout(0.2))
     model.add(layers.Bidirectional(LSTM(256,dropout=0.2,input_shape=(512, 1)),merge_mode = 'sum'))
     model.add(Flatten())
-    model.add(Conv1D(256))
+    model.add(Conv1D(256,1))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.Conv1D(256,3))
