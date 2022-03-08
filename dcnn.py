@@ -18,7 +18,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.layers import Embedding
 from keras.layers import Conv1D
 from keras.layers import MaxPooling1D, GlobalMaxPool1D, GlobalMaxPooling1D, Dropout
-from keras.layers import LSTM
+from keras.layers import LSTM, GRU
 from keras.layers import Bidirectional
 import numpy as np
 import pandas as pd
@@ -152,14 +152,13 @@ def builModel ():
    #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
-    model.add(layers.Bidirectional(LSTM(32)))
+    model.add(layers.Bidirectional(GRU(64, recurrente_dropout=0.2)))
     #model.add(Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(32, activation='relu'))
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
     model.add(Dense(1, activation="sigmoid"))
-    model.add(BatchNormalization())
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
 def builModel2 ():
