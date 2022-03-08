@@ -142,7 +142,7 @@ def builModel ():
     model.add(Conv1D(512, 5,input_shape=(512, 1)))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(Conv1D(256, 5,input_shape=(512, 1)))
+    #model.add(Conv1D(256, 5,input_shape=(512, 1)))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.Conv1D(128, 5))
@@ -159,7 +159,7 @@ def builModel ():
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
     return model
 def builModel2 ():
     model = Sequential()
