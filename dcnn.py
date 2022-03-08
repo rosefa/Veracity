@@ -178,6 +178,20 @@ def builModel2 ():
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
+def builModel3 ():
+    model = Sequential()
+    #model.add(Dropout(0.2))
+    model.add(Conv1D(512, 5,activation='relu',input_shape=(512, 1)))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.LSTM(256,dropout=0.2,return_sequences=True))
+    model.add(layers.LSTM(256))
+    model.add(Flatten())
+    model.add(layers.LSTM(64))
+    model.add(layers.Dense(32, activation='relu'))
+    model.add(Dense(1, activation="sigmoid"))
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
+    return model
 def text_prepare(text):
     mitext = clean_text(text)
     return mitext
