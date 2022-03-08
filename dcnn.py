@@ -186,7 +186,7 @@ def builModel3 ():
     model.add(layers.MaxPooling1D())
     model.add(layers.LSTM(256,dropout=0.2,return_sequences=True))
     model.add(layers.LSTM(256))
-    model.add(Flatten())
+    #model.add(Flatten())
     model.add(layers.LSTM(64))
     model.add(layers.Dense(32, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
