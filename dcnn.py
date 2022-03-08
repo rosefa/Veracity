@@ -159,7 +159,8 @@ def builModel ():
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.01), metrics=['accuracy'])
+    model.add(BatchNormalization())
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
 def builModel2 ():
     model = Sequential()
