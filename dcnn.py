@@ -187,6 +187,18 @@ def builModel3 ():
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
+def builModel4 ():
+    model = Sequential()
+    #model.add(Dropout(0.2))
+    model.add(Conv1D(512, 5,activation='relu',input_shape=(512, 1)))
+    model.add(BatchNormalization())
+    model.add(layers.MaxPooling1D())
+    model.add(layers.LSTM(256,dropout=0.2,activation='relu'))
+    #model.add(Flatten())
+    model.add(layers.Dense(32, activation='relu'))
+    model.add(Dense(1, activation="sigmoid"))
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
+    return model
 def text_prepare(text):
     mitext = clean_text(text)
     return mitext
@@ -218,7 +230,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
-model = builModel3()
+model = builModel4()
 model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
 predicted = model.predict(embeddings_test)
 predicted = np.argmax(predicted, axis=1)
