@@ -189,12 +189,11 @@ def builModel3 ():
     return model
 def builModel4 ():
     model = Sequential()
-    model.add(Dropout(0.2))
+    #model.add(Dropout(0.2))
     model.add(Conv1D(128, 5,activation='relu',input_shape=(512, 1)))
     model.add(layers.MaxPooling1D())
     #model.add(Flatten())
-    model.add(layers.Dense(256, activation='relu'))
-    model.add(Dropout(0.2))
+    #model.add(layers.Dense(256, activation='relu'))
     model.add(layers.Dense(128, activation='relu'))
     model.add(layers.Dense(32, activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
