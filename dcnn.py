@@ -185,7 +185,7 @@ def builModel3 ():
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.LSTM(512,dropout=0.5,return_sequences=True))
-    model.add(layers.LSTM(512,dropout=0.3))
+    model.add(layers.LSTM(512,dropout=0.3,return_sequences=True))
     #model.add(Flatten())
     model.add(layers.LSTM(512,dropout=0.2))
     model.add(layers.Dense(64, activation='relu'))
