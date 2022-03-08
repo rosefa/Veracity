@@ -139,7 +139,7 @@ def tokenize(text):
 def builModel ():
     model = Sequential()
     #model.add(Dropout(0.2))
-    model.add(Conv1D(512, 3,input_shape=(512, 1),dropout=0.2))
+    model.add(Conv1D(512, 3,input_shape=(512, 1)))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(layers.Conv1D(256,3))
