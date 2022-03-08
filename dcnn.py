@@ -152,14 +152,14 @@ def builModel ():
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(BatchNormalization())
-    model.add(layers.Bidirectional(GRU(64),merge_mode = 'sum'))
+    model.add(layers.Bidirectional(LSTM(64),merge_mode = 'concat'))
     #model.add(Dropout(0.2))
     #model.add(BatchNormalization())
     model.add(layers.Dense(32, activation='relu'))
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(learning_rate=0.03), metrics=['accuracy'])
     return model
 def builModel2 ():
     model = Sequential()
