@@ -140,18 +140,18 @@ def tokenize(text):
 def builModel ():
     model = Sequential()
     #model.add(Dropout(0.2))
-    model.add(Conv1D(512, 3,activation='relu',input_shape=(512, 1)))
+    model.add(Conv1D(512, 5,activation='relu',input_shape=(512, 1)))
     #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Conv1D(256, 3,activation='relu'))
+    model.add(layers.Conv1D(256, 5,activation='relu'))
     #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Conv1D(128, 3,activation='relu'))
+    model.add(layers.Conv1D(128, 5,activation='relu'))
     #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     #model.add(Dense(32, activation="relu"))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss=tf.keras.losses.categorical_crossentropy(), optimizer=optimizers.Adam(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
     return model
 def builModel2 ():
     model = Sequential()
