@@ -153,7 +153,8 @@ def builModel ():
     model.add(layers.MaxPooling1D())
     model.add(BatchNormalization())'''
     model.add(LSTM(64))
-    model.add(Dense(64))
+    model.add(Dropout(0.1))
+    model.add(Dense(64,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
     return model
