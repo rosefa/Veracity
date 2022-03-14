@@ -155,7 +155,7 @@ def tokenize(text):
 def builModel ():
     model = Sequential()
     #model.add(Dropout(0.2))
-    model.add(layers.Conv1D(512, 5,activation='relu',input_shape=(512, 1)))
+    model.add(layers.Conv1D(128, 5,activation='relu',input_shape=(512, 1)))
     #model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
     model.add(Dropout(0.2))
@@ -229,24 +229,21 @@ data['Neg']= neg
 data_train, data_test = train_test_split(data, test_size=0.2)
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-dataEmb = [text_prepare(x) for x in data.article_content]
+'''dataEmb = [text_prepare(x) for x in data.article_content]
 train = [text_prepare(x) for x in data_train.article_content]
 test = [text_prepare(x) for x in data_test.article_content]
 dataEmb = embeddings_train(dataEmb)
 train = embeddings_train(train)
 test = embeddings_train(test)
-embeddings_data=np.array([np.reshape(embed, (len(embed), 1)) for embed in dataEmb])
+embeddings_data=np.array([np.reshape(embed, (len(embed), 1)) for embed in dataEmb])'''
 #embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 #embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
+
 myData = [text_prepare(x) for x in myData]
 print('pretraitement termine !!!')
-le = LabelEncoder()
-mylabels = le.fit_transform(labels)
-X = myData
-y = mylabels
-data_train, data_test,label_train,label_test = train_test_split(X,y, test_size=0.2)
+data_train, data_test,label_train,label_test = train_test_split(myData,labels, test_size=0.2,shuffle=True)
 trainX = embeddings_train(data_train)
 testX = embeddings_train(data_test)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in trainX])
@@ -259,7 +256,7 @@ model = builModel()
 #print(results)
 #print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 #model.fit(embeddings_train,data_train.labels,epochs=100,validation_data=(embeddings_test,data_test.labels),batch_size=64,verbose=1)
-model.fit(embeddings_train,label_train,epochs=50,validation_data=(embeddings_test,label_test),batch_size=40,verbose=1)
+model.fit(embeddings_train,label_train,epochs=10,validation_data=(embeddings_test,label_test),batch_size=64,verbose=1)
 
 #predicted = model.predict(embeddings_test)
 #predicted = np.argmax(predicted, axis=1)
