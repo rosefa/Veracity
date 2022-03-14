@@ -227,6 +227,7 @@ embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainab
 dataEmb = [text_prepare(x) for x in data.article_content]
 train = [text_prepare(x) for x in data_train.article_content]
 test = [text_prepare(x) for x in data_test.article_content]
+dataEmb = embeddings_train(dataEmb)
 train = embeddings_train(train)
 test = embeddings_train(test)
 embeddings_data=np.array([np.reshape(embed, (len(embed), 1)) for embed in dataEmb])
