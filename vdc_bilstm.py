@@ -560,80 +560,13 @@ x_train,x_test,y_train,y_test = train_test_split(myData,mylabels, test_size=0.2)
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
 textData = np.concatenate((myData_train_Glove, myData_test_Glove), axis=0)
 textLabel = np.concatenate((y_train, y_test), axis=0)
-#textLabel = np.concatenate(y_train, y_test)
-print("debut des k-fold")
-#text = myData_train_Glove
-#mylabels = mylabels
-#myDatatest = myData_test_Glove
-#mylabels = np.concatenate((y_train, y_test), axis=0)
-'''#model = build_bilstm(word_index, embeddings_dict, 1)
-#model = KerasClassifier(build_fn=build_bilstm(word_index, embeddings_dict, 1), verbose=0)
-model = KerasClassifier(build_fn=build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,batch_size=64,epochs=10,verbose=0)
-# define the grid search parameters
-#batch_size = [60, 80, 100,150]
-#epochs = [10,50,60,100]
-merge_mode=['sum', 'mul', 'concat', 'ave']
-#optimizer = ['adam']
-#optimizer = ['SGD', 'RMSprop', 'Adagrad', 'Adadelta', 'Adam', 'Adamax', 'Nadam']
-param_grid = dict(merge_mode=merge_mode)
-#param_grid = dict(batch_size=batch_size, epochs=epochs)
-grid = GridSearchCV(estimator=model,param_grid=param_grid, n_jobs=-1, cv=5)
-grid_result = grid.fit(text, mylabels)
-print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-means = grid_result.cv_results_['mean_test_score']
-stds = grid_result.cv_results_['std_test_score']
-params = grid_result.cv_results_['params']
-for mean, stdev, param in zip(means, stds, params):
-    print("%f (%f) with: %r" % (mean, stdev, param))'''
 
-kf = KFold(n_splits=5)
-for train, test in kf.split(textData,textLabel) :
-  """model = cnn_bilstm(word_index, embeddings_dict)
-  history1 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
-  results1 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  model = cnn_lstm(word_index, embeddings_dict)
-  history2 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64,verbose=0)
-  results2 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  model = vdc_lstm(word_index, embeddings_dict)
-  history3 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=50, batch_size=64, verbose=0)
-  results3 = model.evaluate(textData[test],textLabel[test],verbose=0)"""
-  #model = dann(word_index, embeddings_dict)
-  #history4 = model.fit(text[train], mylabels[train],validation_data=(textData[test], textLabel[test]), epochs=10, batch_size=64, verbose=0)
-  #results4 = model.evaluate(text[test],mylabels[test],verbose=0)
-  model = dlstm(word_index, embeddings_dict)
-  history5 = model.fit(textData[train], textLabel[train],validation_data=(textData[test], textLabel[test]), epochs=60, batch_size=64, verbose=1)
-  results5 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  #model = dann(word_index, embeddings_dict)
-  #history6 = model.fit(textData[train], textLabel[train],validation_split=0.2, epochs=10, batch_size=64, verbose=0)
-  #results6 = model.evaluate(textData[test],textLabel[test],verbose=0)
-  """plot_graphs(history1, history2,history3,history5,'accuracy')
-  plot_graphs2(history1, history2,history3,history5,'val_accuracy')
-  plot_graphs(history1,history2,history3,history5, 'loss')"""
-  #exactitudeTab.append(results[1])
-  #precisionTab.append(results[2])
-  #rappelTab.append(results[3])
-  """print('cnn_bilstm')
-  print(results1[1])
-  print(results1[2])
-  print(results1[3])
-  print('cnn_lstm')
-  print(results2[1])
-  print(results2[2])
-  print(results2[3])
-  print('vdc_lstm')
-  print(results3[1])
-  print(results3[2])
-  print(results3[3])"""
-  #print('dann')
-  #print(results4[1])
-  #print(results4[2])
-  #print(results4[3])
-  print('dlstm')
-  print(results5[1])
-  print(results5[2])
-  print(results5[3])
-  print('dann')
-  #print(results6[1])
-  #print(results6[2])
-  #print(results6[3])
-  print('******************************************************') 
+model = cnn_bilstm(word_index, embeddings_dict)
+history1 = model.fit(myData_train_Glove, y_train,validation_data=(x_test, y_test), epochs=50, batch_size=64, verbose=1)
+model = cnn_lstm(word_index, embeddings_dict)
+history2 = model.fit(myData_train_Glove, y_train,validation_data=(x_test, y_test), epochs=50, batch_size=64, verbose=1)
+model = vdc_lstm(word_index, embeddings_dict)
+history3 = model.fit(myData_train_Glove, y_train,validation_data=(x_test, y_test), epochs=50, batch_size=64, verbose=1)
+plot_graphs(history1, history2,history3,'accuracy')
+plot_graphs2(history1, history2,history3,'val_accuracy')
+plot_graphs(history1,history2,history3,'loss')
