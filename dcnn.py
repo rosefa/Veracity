@@ -236,7 +236,7 @@ embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
 model = builModel()
-estimator = KerasClassifier(build_fn=model, epochs=50, batch_size=40, verbose=0)
+estimator = KerasClassifier(build_fn=builModel, epochs=50, batch_size=40, verbose=0)
 kfold = StratifiedKFold(n_splits=10, shuffle=True)
 results = cross_val_score(estimator,embeddings_data, data.labels, cv=kfold)
 print(results)
