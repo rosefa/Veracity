@@ -53,6 +53,7 @@ import statistics
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
+labels =[]
 i=0
 j=0
 while i<len(dataf1):
