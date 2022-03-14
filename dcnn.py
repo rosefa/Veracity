@@ -259,7 +259,7 @@ model = builModel()
 #print(results)
 #print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 #model.fit(embeddings_train,data_train.labels,epochs=100,validation_data=(embeddings_test,data_test.labels),batch_size=64,verbose=1)
-model.fit(embeddings_train,label_train.labels,epochs=50,validation_data=(embeddings_test,label_test),batch_size=40,verbose=1)
+model.fit(embeddings_train,label_train,epochs=50,validation_data=(embeddings_test,label_test),batch_size=40,verbose=1)
 
 #predicted = model.predict(embeddings_test)
 #predicted = np.argmax(predicted, axis=1)
