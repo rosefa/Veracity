@@ -154,6 +154,7 @@ def builModel ():
     #model.add(layers.Dense(64, activation='relu'))
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
+    model.add(layers.LSTM(128))
     model.add(Dense(32, activation="relu"))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
