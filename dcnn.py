@@ -224,10 +224,12 @@ data['Neg']= neg
 data_train, data_test = train_test_split(data, test_size=0.3)
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+dataEmb = [text_prepare(x) for x in data.article_content]
 train = [text_prepare(x) for x in data_train.article_content]
 test = [text_prepare(x) for x in data_test.article_content]
 train = embeddings_train(train)
 test = embeddings_train(test)
+embeddings_data=np.array([np.reshape(embed, (len(embed), 1)) for embed in dataEmb])
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])
 embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
@@ -235,7 +237,7 @@ embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train
 model = builModel()
 estimator = KerasClassifier(build_fn=model, epochs=50, batch_size=40, verbose=0)
 kfold = StratifiedKFold(n_splits=10, shuffle=True)
-results = cross_val_score(estimator, X, encoded_Y, cv=kfold)
+results = cross_val_score(estimator,embeddings_data, data['labels'].values, cv=kfold)
 #print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 #model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
 #predicted = model.predict(embeddings_test)
