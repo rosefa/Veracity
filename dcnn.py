@@ -13,6 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.layers import TextVectorization
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras import layers
+import tensorflow_decision_forests as tfdf
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.layers import Embedding
@@ -183,7 +184,7 @@ def builModel3 ():
     #model.add(Dropout(0.2))
     model.add(layers.Bidirectional(LSTM(128,dropout=0.2,input_shape=(512, 1)),merge_mode = 'sum'))
     #model.add(Flatten())
-    model.add(layers.Dense(512,activation='relu'))
+    model.add(layers.Dense(32,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
@@ -239,7 +240,7 @@ model = builModel3()
 #results = cross_val_score(estimator,embeddings_data, data.labels, cv=kfold)
 #print(results)
 #print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
-model.fit(embeddings_train,data_train.labels,epochs=100,validation_data=(embeddings_test,data_test.labels),batch_size=10,verbose=1)   
+model.fit(embeddings_train,data_train.labels,epochs=100,validation_data=(embeddings_test,data_test.labels),batch_size=64,verbose=1)   
 #predicted = model.predict(embeddings_test)
 #predicted = np.argmax(predicted, axis=1)
 #print(metrics.classification_report(data_test['labels'].values, predicted))
