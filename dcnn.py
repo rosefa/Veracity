@@ -156,7 +156,7 @@ def builModel ():
     #model.add(layers.Dense(64, activation='relu'))
     #model.add(Dropout(0.1))
     #model.add(BatchNormalization())
-    model.add(layers.LSTM(32))
+    #model.add(layers.LSTM(32))
     model.add(Dense(32, activation="relu"))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
@@ -220,7 +220,7 @@ for l in data.labels:
 data['Pos']= pos
 data['Neg']= neg
 
-data_train, data_test = train_test_split(data, test_size=0.3)
+data_train, data_test = train_test_split(data, test_size=0.2)
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 dataEmb = [text_prepare(x) for x in data.article_content]
@@ -235,12 +235,12 @@ embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in test])
 '''train = embeddings_train(data_train.article_content)
 embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in train])'''
 model = builModel()
-estimator = KerasClassifier(build_fn=builModel, epochs=50, batch_size=40, verbose=0)
-kfold = StratifiedKFold(n_splits=10, shuffle=True)
-results = cross_val_score(estimator,embeddings_data, data.labels, cv=kfold)
-print(results)
-print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
-#model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40)   
+#estimator = KerasClassifier(build_fn=builModel, epochs=50, batch_size=40, verbose=0)
+#kfold = StratifiedKFold(n_splits=10, shuffle=True)
+#results = cross_val_score(estimator,embeddings_data, data.labels, cv=kfold)
+#print(results)
+#print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+model.fit(embeddings_train,data_train.labels,epochs=50,validation_data=(embeddings_test,data_test.labels),batch_size=40,verbose=1)   
 #predicted = model.predict(embeddings_test)
 #predicted = np.argmax(predicted, axis=1)
 #print(metrics.classification_report(data_test['labels'].values, predicted))
