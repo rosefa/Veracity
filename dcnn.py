@@ -25,7 +25,7 @@ import pandas as pd
 import re
 import tensorflow as tf
 from tensorflow import keras
-import tensorflow_decision_forests as tfdf
+#import tensorflow_decision_forests as tfdf
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense,Flatten
