@@ -158,7 +158,7 @@ def builModel ():
     model.add(Dropout(0.1))
     model.add(Dense(64,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
-    model.compile(loss='categorical_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
     return model
 def builModel2 ():
     model = Sequential()
