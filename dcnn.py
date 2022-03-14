@@ -173,8 +173,9 @@ def builModel2 ():
     model.add(layers.Conv1D(128, 5,activation='relu'))
     model.add(BatchNormalization())
     model.add(layers.MaxPooling1D())
-    model.add(layers.Bidirectional(LSTM(128),merge_mode = 'sum'))
-    model.add(layers.Dense(32, activation='relu'))
+    #model.add(layers.Bidirectional(LSTM(128),merge_mode = 'sum'))
+    model.add(layers.LSTM(128))
+    model.add(layers.Dense(512,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
@@ -183,7 +184,7 @@ def builModel3 ():
     #model.add(Dropout(0.2))
     model.add(layers.Bidirectional(LSTM(128,dropout=0.2,input_shape=(512, 1)),merge_mode = 'sum'))
     #model.add(Flatten())
-    model.add(layers.Dense(128))
+    model.add(layers.Dense(512,activation='relu'))
     model.add(Dense(1, activation="sigmoid"))
     model.compile(loss='binary_crossentropy', optimizer=optimizers.RMSprop(), metrics=['accuracy'])
     return model
