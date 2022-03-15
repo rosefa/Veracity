@@ -161,7 +161,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,EMBEDDING_DIM,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     model = Conv1D(128, 5,activation='relu')(embedding_layer)
-    model = Activation('relu')(model)
+    #model = Activation('relu')(model)
     model = MaxPooling1D(2)(model)
     model = LSTM(32)(model)
     model = Dense(1,activation='sigmoid')(model)
@@ -169,7 +169,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = keras.Model(inputs=input,outputs=model)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     #df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
-    return model
+    return df_and_nn_model
     
 def plot_graphs(history, string):
   plt.plot(history.history[string])
@@ -236,5 +236,7 @@ model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,tes
 
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
+#df_and_nn_model.compile(metrics=["accuracy"])
+#df_and_nn_model.fit(x=train_ds)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
