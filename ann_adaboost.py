@@ -12,7 +12,7 @@ from tensorflow.keras import layers
 import tensorflow_decision_forests as tfdf
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from keras.layers import Embedding
+from keras.layers import Embedding, Input, Layer
 from keras.layers import Conv1D
 from keras.layers import MaxPooling1D, GlobalMaxPool1D, GlobalMaxPooling1D, Dropout
 from keras.layers import LSTM, GRU
@@ -168,6 +168,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     #model = Activation('sigmoid')(model)
     model = keras.Model(inputs=input,outputs=model)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    #df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
     return model
     
 def plot_graphs(history, string):
