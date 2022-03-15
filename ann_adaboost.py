@@ -59,47 +59,49 @@ datav2 = pd.read_csv('True-2.csv', encoding= 'unicode_escape')
 datav3 = pd.read_csv('True-3.csv', encoding= 'unicode_escape')
 datav4 = pd.read_csv('True-4.csv', encoding= 'unicode_escape')
 neg =[]
-pos =[]
 i=0
 while i<len(dataf1):
   neg.append(0)
   i=i+1
+dataf1['label']=neg
 i=0
+neg =[]
 while i<len(dataf2):
   neg.append(0)
   i=i+1
+dataf2['label']=neg
 i=0
+neg =[]
 while i<len(dataf3):
   neg.append(0)
   i=i+1
+dataf3['label']=neg
+pos =[]
 i=0
 while i<len(datav1):
   pos.append(1)
   i=i+1
+datav1['label']=pos
+pos =[]
 i=0
 while i<len(datav2):
   pos.append(1)
   i=i+1
+datav2['label']=pos
+pos =[]
 i=0
 while i<len(datav3):
   pos.append(1)
   i=i+1
+datav3['label']=pos
+pos =[]
 i=0
 while i<len(datav4):
   pos.append(1)
   i=i+1
+datav4['label']=pos
+data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4])
 
-#dataf1['label']=neg
-#datav1['label']=neg
-#data = pd.concat([dataf1['text'], datav1['text']])
 
-#print (data.shape)
+print (data.shape)
 
-print (dataf1.shape)
-print (dataf2.shape)
-print (dataf3.shape)
-print (datav1.shape)
-print (datav2.shape)
-print (datav3.shape)
-print (datav4.shape)
-#print(labels)
