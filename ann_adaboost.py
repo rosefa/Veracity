@@ -101,7 +101,65 @@ while i<len(datav4):
   i=i+1
 datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4])
+'''************** preprocessing****************'''
+def clean_text(text):
+    
+    replaced_text = re.sub(r'[【】]', ' ', text)
+    replaced_text = re.sub(r'[（）()]', ' ', text)
+    replaced_text = re.sub(r'[［］\[\]]', ' ', text)
+    replaced_text = re.sub(r'[@＠]\w+', '',text)
+    replaced_text = re.sub(r'https?:\/\/.*?[\r\n ]', '', text)
+    return replaced_text 
 
+# Text normalization includes many steps.
+# Each function below serves a step.
+def remove_non_ascii(words):
+    """Remove non-ASCII characters from list of tokenized words"""
+    new_words = []
+    for word in words:
+        new_word = unicodedata.normalize('NFKD', word).encode('ascii', 'ignore').decode('utf-8', 'ignore')
+        new_words.append(new_word)
+    return new_words
 
-print (data.shape)
+def remove_stopwords(words):
+    """Remove stop words from list of tokenized words"""
+    new_words = []
+    for word in words:
+        if word not in stopwords.words('english'):
+            new_words.append(word)
+    return new_words
 
+def normalize_text(words):
+    words = remove_non_ascii(words)
+    words = remove_stopwords(words)
+    return words
+    # Tokenize tweet into words
+def text_prepare(text):
+    mitext = clean_text(text)
+    mitext = ' '.join([x for x in normalize_text(mitext)])
+    return mitext
+  
+def builModel ():
+  model = Sequential()
+  model.add(layers.Conv1D(128, 5,activation='relu',input_shape=(512, 1)))
+  model.add(layers.MaxPooling1D(2))
+  model.add(LSTM(32))
+  model.add(Dense(1, activation="sigmoid"))
+  model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
+  return model
+
+data = [text_prepare(x) for x in data]
+print('pretraitement termine !!!')  
+data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
+trainX = [text_prepare(x) for x in data_train.text]
+testX = [text_prepare(x) for x in data_test.text]
+trainY = [text_prepare(x) for x in data_train.label]
+testY = [text_prepare(x) for x in data_test.label]
+embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
+trainX = embeddings_train(trainX)
+testX = embeddings_train(testX)
+embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in trainX])
+embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in testX])
+model = builModel()
+model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)
