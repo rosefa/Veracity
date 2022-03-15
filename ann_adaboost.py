@@ -169,7 +169,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = keras.Model(inputs=input,outputs=model)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     #df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
-    return df_and_nn_model
+    return model
     
 def plot_graphs(history, string):
   plt.plot(history.history[string])
