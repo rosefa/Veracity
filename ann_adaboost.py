@@ -103,7 +103,8 @@ while i<len(datav4):
   pos.append(1)
   i=i+1
 datav4['label']=pos
-data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4])
+data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
+print(data.head)
 '''************** preprocessing****************'''
 def clean_text(text):
     
