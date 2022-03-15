@@ -154,10 +154,10 @@ def builModel ():
 data = [text_prepare(x) for x in data]
 print('pretraitement termine !!!')  
 data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-trainX = [text_prepare(x) for x in data_train.text]
-testX = [text_prepare(x) for x in data_test.text]
-trainY = [text_prepare(x) for x in data_train.label]
-testY = [text_prepare(x) for x in data_test.label]
+trainX = [text_prepare(x) for x in data_train['text']]
+testX = [text_prepare(x) for x in data_test['text']]
+trainY = [text_prepare(x) for x in data_train['label']]
+testY = [text_prepare(x) for x in data_test['label']]
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 trainX = embeddings_train(trainX)
