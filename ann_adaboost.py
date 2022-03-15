@@ -49,7 +49,10 @@ from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
 import statistics
 import unicodedata
-#embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+from nltk import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import LancasterStemmer, WordNetLemmatizer
+from sklearn.preprocessing import LabelEncoder
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
