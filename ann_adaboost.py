@@ -48,7 +48,7 @@ from sklearn.model_selection import train_test_split
 from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
 import statistics
-
+import unicodedata
 #embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
