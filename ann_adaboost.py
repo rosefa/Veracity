@@ -1,9 +1,4 @@
 from keras.layers.normalization.batch_normalization import BatchNormalization
-#!wget http://nlp.stanford.edu/data/glove.6B.zip
-#!unzip -q glove.6B.zip
-#!ls
-#!pip install scikeras
-#!pip install --upgrade tensorflow_hub
 import wget
 #nltk.download('omw-1.4')
 from numpy import asarray
@@ -169,7 +164,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = MaxPooling1D(2)(model)
     model = LSTM(32)(model)
     model = Dense(1,activation='sigmoid')(model)
-    model = Activation('sigmoid')(model)
+    #model = Activation('sigmoid')(model)
     model = keras.Model(inputs=input,outputs=model)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     return model
@@ -183,7 +178,6 @@ def plot_graphs(history, string):
   plt.show()
   
 def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
-#def prepare_model_input(X_train,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
     np.random.seed(7)
     text = np.concatenate((train,test), axis=0)
     tokenizer = Tokenizer(num_words=75000)
@@ -207,17 +201,27 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
     return (textTrain, textTest, word_index, embeddings_dict)
 
 
-data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
+#data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
+myData_train, myData_test = train_test_split(dataTest, test_size=0.3,shuffle=True)
+
+trainX = myData_train['article_content']
+testX = myData_test['article_content']
+trainY = myData_train['labels']
+testY = myData_test['labels']
+'''trainX = data_train['text']
+testX = data_test['text']
+trainY = data_train['label']
+testY = data_test['label']'''
+trainX = [text_prepare(x) for x in trainX]
+testX = [text_prepare(x) for x in testX]
+myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(trainX,testX)
 #print(data_test)
 #trainX = [text_prepare(x) for x in data_train['text']]
 #testX = [text_prepare(x) for x in data_test['text']]
-trainX = data_train['text']
-testX = data_test['text']
-trainY = data_train['label']
-testY = data_test['label']
+
 print('pretraitement termine !!!')  
 
-embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
+'''embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 trainX = embeddings_train(trainX)
 testX = embeddings_train(testX)
@@ -225,10 +229,10 @@ embeddings_train = np.array([np.reshape(embed, (len(embed), 1)) for embed in tra
 embeddings_test = np.array([np.reshape(embed, (len(embed), 1)) for embed in testX])
 print('le model')
 model = builModel()
-model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)
-'''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)
-myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
+model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)'''
+'''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
+
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
 history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=10, batch_size=64, verbose=1)
 plot_graphs(history, 'accuracy')
-plot_graphs(history, 'loss')'''
+plot_graphs(history, 'loss')
