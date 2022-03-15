@@ -188,7 +188,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
     textTrain = pad_sequences(sequencesTrain, maxlen=300)
     textTest = pad_sequences(sequencesTest, maxlen=300)
     embeddings_dict = {}
-    f = open("glove.6B.300d.txt", encoding="utf8")
+    f = open("glove.6B.100d.txt", encoding="utf8")
     for line in f:
         values = line.split()
         word = values[0]
