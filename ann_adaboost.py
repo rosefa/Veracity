@@ -63,5 +63,8 @@ while j<len(datav1):
   labels.append(1)
   j=j+1
 data = pd.concat([dataf1['text'], datav1['text']])
-print (data.shape())
-print (labels.shape())
+print (data.shape)
+print (labels.shape)
+print (dataf1.shape)
+print (dataf2.shape)
+print(labels)
