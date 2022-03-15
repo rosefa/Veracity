@@ -1,3 +1,4 @@
+import tensorflow_decision_forests as tfdf
 from keras.layers.normalization.batch_normalization import BatchNormalization
 import wget
 #nltk.download('omw-1.4')
@@ -202,7 +203,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
 
 
 #data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-myData_train, myData_test = train_test_split(dataTest, test_size=0.3,shuffle=True)
+myData_train, myData_test = train_test_split(dataTest, test_size=0.2,shuffle=True)
 
 trainX = myData_train['article_content']
 testX = myData_test['article_content']
@@ -233,6 +234,6 @@ model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,tes
 '''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
 
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
-history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=10, batch_size=64, verbose=1)
+history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
