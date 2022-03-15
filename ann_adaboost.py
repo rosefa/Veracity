@@ -104,7 +104,7 @@ while i<len(datav4):
   i=i+1
 datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
-print(data.head)
+print(list(data.columns))
 '''************** preprocessing****************'''
 def clean_text(text):
     
@@ -152,13 +152,15 @@ def builModel ():
   model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
   return model
 
-data = [text_prepare(x) for x in data]
+#data = [text_prepare(x) for x in data]
 print('pretraitement termine !!!')  
 data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
+print(data_test)
 trainX = [text_prepare(x) for x in data_train['text']]
 testX = [text_prepare(x) for x in data_test['text']]
 trainY = [text_prepare(x) for x in data_train['label']]
 testY = [text_prepare(x) for x in data_test['label']]
+
 embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 trainX = embeddings_train(trainX)
