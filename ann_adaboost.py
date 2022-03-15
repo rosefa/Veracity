@@ -54,23 +54,44 @@ import statistics
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
 dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
-datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
-datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
-datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
+datav1 = pd.read_csv('True-1.csv', encoding= 'unicode_escape')
+datav2 = pd.read_csv('True-2.csv', encoding= 'unicode_escape')
+datav3 = pd.read_csv('True-3.csv', encoding= 'unicode_escape')
+datav4 = pd.read_csv('True-4.csv', encoding= 'unicode_escape')
 neg =[]
 pos =[]
 i=0
-j=0
 while i<len(dataf1):
   neg.append(0)
   i=i+1
-while j<len(datav1):
+i=0
+while i<len(dataf2):
+  neg.append(0)
+  i=i+1
+i=0
+while i<len(dataf3):
+  neg.append(0)
+  i=i+1
+i=0
+while i<len(datav1):
   pos.append(1)
-  j=j+1
+  i=i+1
+i=0
+while i<len(datav2):
+  pos.append(1)
+  i=i+1
+i=0
+while i<len(datav3):
+  pos.append(1)
+  i=i+1
+i=0
+while i<len(datav4):
+  pos.append(1)
+  i=i+1
 
-dataf1['label']=neg
-datav1['label']=neg
-data = pd.concat([dataf1['text'], datav1['text']])
+#dataf1['label']=neg
+#datav1['label']=neg
+#data = pd.concat([dataf1['text'], datav1['text']])
 
 #print (data.shape)
 
@@ -80,4 +101,5 @@ print (dataf3.shape)
 print (datav1.shape)
 print (datav2.shape)
 print (datav3.shape)
+print (datav4.shape)
 #print(labels)
