@@ -49,6 +49,7 @@ from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
@@ -131,9 +132,19 @@ def remove_stopwords(words):
             new_words.append(word)
     return new_words
 
+def stem_words(words):
+    """Stem words in list of tokenized words"""
+    stemmer = LancasterStemmer()
+    stems = []
+    for word in words:
+        stem = stemmer.stem(word)
+        stems.append(stem)
+    return stems
+  
 def normalize_text(words):
     words = remove_non_ascii(words)
     words = remove_stopwords(words)
+    words = stem_words(words)
     return words
     # Tokenize tweet into words
 def text_prepare(text):
@@ -151,7 +162,8 @@ def builModel ():
   return model
 
 def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    optimizer = tf.keras.optimizers.Adam()
     #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, EMBEDDING_DIM))
@@ -161,14 +173,12 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
             embedding_matrix[i] = embedding_vector
     embedding_layer = Embedding(len(word_index) + 1,EMBEDDING_DIM,weights=[embedding_matrix],input_length=300,trainable=True)(input)
     model = Conv1D(128, 5,activation='relu')(embedding_layer)
-    #model = Activation('relu')(model)
     model = MaxPooling1D(2)(model)
     model = LSTM(32)(model)
     model = Dense(1,activation='sigmoid')(model)
-    #model = Activation('sigmoid')(model)
     model = keras.Model(inputs=input,outputs=model)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
-    #df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
+    
     return model
     
 def plot_graphs(history, string):
@@ -235,8 +245,10 @@ model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,tes
 '''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
 
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
+#model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+#df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
 #df_and_nn_model.compile(metrics=["accuracy"])
-#df_and_nn_model.fit(x=train_ds)
+#df_and_nn_model.fit(x=myData_train_Glove)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
