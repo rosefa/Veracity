@@ -52,19 +52,32 @@ import statistics
 #embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
+dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
+dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
 datav1 = pd.read_csv('Vrai-1.csv', encoding= 'unicode_escape')
-labels =[]
+datav2 = pd.read_csv('Vrai-2.csv', encoding= 'unicode_escape')
+datav3 = pd.read_csv('Vrai-3.csv', encoding= 'unicode_escape')
+neg =[]
+pos =[]
 i=0
 j=0
 while i<len(dataf1):
-  labels.append(0)
+  neg.append(0)
   i=i+1
 while j<len(datav1):
-  labels.append(1)
+  pos.append(1)
   j=j+1
+
+dataf1['label']=neg
+datav1['label']=neg
 data = pd.concat([dataf1['text'], datav1['text']])
-print (data.shape)
+
+#print (data.shape)
 
 print (dataf1.shape)
+print (dataf2.shape)
+print (dataf3.shape)
 print (datav1.shape)
-print(labels)
+print (datav2.shape)
+print (datav3.shape)
+#print(labels)
