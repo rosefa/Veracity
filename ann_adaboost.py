@@ -61,7 +61,7 @@ datav1 = pd.read_csv('True-1.csv', encoding= 'unicode_escape')
 datav2 = pd.read_csv('True-2.csv', encoding= 'unicode_escape')
 datav3 = pd.read_csv('True-3.csv', encoding= 'unicode_escape')
 datav4 = pd.read_csv('True-4.csv', encoding= 'unicode_escape')
-dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+
 neg =[]
 i=0
 while i<len(dataf1):
@@ -106,6 +106,7 @@ while i<len(datav4):
 datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
 #print(list(data.columns))
+dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 '''************** preprocessing****************'''
 def clean_text(text):
     
@@ -153,12 +154,65 @@ def builModel ():
   model.compile(loss='binary_crossentropy', optimizer=optimizers.Adam(), metrics=['accuracy'])
   return model
 
-#data = [text_prepare(x) for x in data]
+def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
+    input = Input(shape=(300,), dtype='int32')
+    embedding_matrix = np.random.random((len(word_index)+1, EMBEDDING_DIM))
+    for word, i in word_index.items():
+        embedding_vector = embeddings_dict.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
+    embedding_layer = Embedding(len(word_index) + 1,EMBEDDING_DIM,weights=[embedding_matrix],input_length=300,trainable=True)(input)
+    model = Conv1D(128, 5,activation='relu')(embedding_layer)
+    model = Activation('relu')(model)
+    model = MaxPooling1D(2)(model)
+    model = LSTM(32)(model)
+    model = Dense(1,activation='sigmoid')(model)
+    model = Activation('sigmoid')(model)
+    model = keras.Model(inputs=input,outputs=model)
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    return model
+    
+def plot_graphs(history, string):
+  plt.plot(history.history[string])
+  plt.plot(history.history['val_'+string], '')
+  plt.xlabel("Epochs")
+  plt.ylabel(string)
+  plt.legend([string, 'val_'+string])
+  plt.show()
+  
+def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
+#def prepare_model_input(X_train,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
+    np.random.seed(7)
+    text = np.concatenate((train,test), axis=0)
+    tokenizer = Tokenizer(num_words=75000)
+    tokenizer.fit_on_texts(text)
+    sequencesTrain = tokenizer.texts_to_sequences(train)
+    sequencesTest = tokenizer.texts_to_sequences(test)
+    word_index = tokenizer.word_index
+    textTrain = pad_sequences(sequencesTrain, maxlen=300)
+    textTest = pad_sequences(sequencesTest, maxlen=300)
+    embeddings_dict = {}
+    f = open("glove.6B.300d.txt", encoding="utf8")
+    for line in f:
+        values = line.split()
+        word = values[0]
+        try:
+            coefs = np.asarray(values[1:], dtype='float32')
+        except:
+            pass
+        embeddings_dict[word] = coefs
+    f.close()
+    return (textTrain, textTest, word_index, embeddings_dict)
+
 
 data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
 #print(data_test)
-trainX = [text_prepare(x) for x in data_train['text']]
-testX = [text_prepare(x) for x in data_test['text']]
+#trainX = [text_prepare(x) for x in data_train['text']]
+#testX = [text_prepare(x) for x in data_test['text']]
+trainX = data_train['text']
+testX = data_test['text']
 trainY = data_train['label']
 testY = data_test['label']
 print('pretraitement termine !!!')  
@@ -172,3 +226,9 @@ embeddings_test = np.array([np.reshape(embed, (len(embed), 1)) for embed in test
 print('le model')
 model = builModel()
 model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)
+'''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)
+myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(x_train,x_test)
+model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
+history = model.fit(myData_train_Glove, y_train,validation_data=(myData_test_Glove, y_test), epochs=10, batch_size=64, verbose=1)
+plot_graphs(history, 'accuracy')
+plot_graphs(history, 'loss')'''
