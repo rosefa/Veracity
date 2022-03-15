@@ -61,6 +61,7 @@ datav1 = pd.read_csv('True-1.csv', encoding= 'unicode_escape')
 datav2 = pd.read_csv('True-2.csv', encoding= 'unicode_escape')
 datav3 = pd.read_csv('True-3.csv', encoding= 'unicode_escape')
 datav4 = pd.read_csv('True-4.csv', encoding= 'unicode_escape')
+dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 neg =[]
 i=0
 while i<len(dataf1):
@@ -104,7 +105,7 @@ while i<len(datav4):
   i=i+1
 datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
-print(list(data.columns))
+#print(list(data.columns))
 '''************** preprocessing****************'''
 def clean_text(text):
     
@@ -155,7 +156,7 @@ def builModel ():
 #data = [text_prepare(x) for x in data]
 print('pretraitement termine !!!')  
 data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-print(data_test)
+#print(data_test)
 trainX = [text_prepare(x) for x in data_train['text']]
 testX = [text_prepare(x) for x in data_test['text']]
 trainY = [text_prepare(x) for x in data_train['label']]
@@ -165,7 +166,8 @@ embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
 trainX = embeddings_train(trainX)
 testX = embeddings_train(testX)
-embeddings_train=np.array([np.reshape(embed, (len(embed), 1)) for embed in trainX])
-embeddings_test=np.array([np.reshape(embed, (len(embed), 1)) for embed in testX])
+embeddings_train = np.array([np.reshape(embed, (len(embed), 1)) for embed in trainX])
+embeddings_test = np.array([np.reshape(embed, (len(embed), 1)) for embed in testX])
+print('le model')
 model = builModel()
 model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)
