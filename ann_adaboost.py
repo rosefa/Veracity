@@ -66,5 +66,5 @@ data = pd.concat([dataf1['text'], datav1['text']])
 print (data.shape)
 
 print (dataf1.shape)
-print (dataf2.shape)
+print (datav1.shape)
 print(labels)
