@@ -177,7 +177,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = LSTM(32)(model)
     model = Dense(1,activation='sigmoid')(model)
     model = keras.Model(inputs=input,outputs=model)
-    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    #model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
     return model
     
@@ -245,10 +245,10 @@ model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,tes
 '''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
 
 model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
-#model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
-#df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
+df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
+model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
-#df_and_nn_model.compile(metrics=["accuracy"])
-#df_and_nn_model.fit(x=myData_train_Glove)
+df_and_nn_model.compile(metrics=["accuracy"])
+df_and_nn_model.fit(x=myData_train_Glove)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
