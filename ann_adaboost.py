@@ -214,7 +214,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
 
 
 #data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-myData_train, myData_test = train_test_split(dataTest, test_size=0.3,shuffle=True)
+myData_train, myData_test = train_test_split(dataTest, test_size=0.2,shuffle=True)
 
 trainX = myData_train['article_content']
 testX = myData_test['article_content']
@@ -261,7 +261,7 @@ lastLayer = LSTM(32)(model)
 outputLayer = Dense(1,activation='sigmoid')(lastLayer)
 model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
 nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
-df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head)
+df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num_trees=100)
 #model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
 #model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
