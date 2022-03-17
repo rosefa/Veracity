@@ -227,6 +227,7 @@ testY = data_test['label']'''
 trainX = [text_prepare(x) for x in trainX]
 testX = [text_prepare(x) for x in testX]
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(trainX,testX)
+train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(myData_train_Glove, label=trainY)
 #print(data_test)
 #trainX = [text_prepare(x) for x in data_train['text']]
 #testX = [text_prepare(x) for x in data_test['text']]
@@ -256,13 +257,15 @@ model = Conv1D(256, 5,activation='relu')(embedding_layer)
 model = MaxPooling1D(2)(model)
 model = Conv1D(128, 3,activation='relu')(model)
 model = MaxPooling1D(2)(model)
-model = LSTM(64)(model)
-model = Dense(1,activation='sigmoid')(model)
-model = keras.Model(inputs=input,outputs=model)
+lastLayer = LSTM(64)(model)
+outputLayer = Dense(1,activation='sigmoid')(model)
+model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
+nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
+df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head)
 #model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
 #model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
-df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
+#df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=50, batch_size=64, verbose=1)
 df_and_nn_model.compile(metrics=["accuracy"])
