@@ -214,7 +214,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
 
 
 #data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-myData_train, myData_test = train_test_split(dataTest, test_size=0.2,shuffle=True)
+myData_train, myData_test = train_test_split(dataTest, test_size=0.3,shuffle=True)
 
 trainX = myData_train['article_content']
 testX = myData_test['article_content']
@@ -227,7 +227,7 @@ testY = data_test['label']'''
 trainX = [text_prepare(x) for x in trainX]
 testX = [text_prepare(x) for x in testX]
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(trainX,testX)
-train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(myData_train_Glove, label=trainY)
+#train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(myData_train, label="labels")
 #print(data_test)
 #trainX = [text_prepare(x) for x in data_train['text']]
 #testX = [text_prepare(x) for x in data_test['text']]
@@ -269,6 +269,6 @@ df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head)
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=50, batch_size=64, verbose=1)
 df_and_nn_model.compile(metrics=["accuracy"])
-df_and_nn_model.fit(x=myData_train_Glove)
+df_and_nn_model.fit(myData_train_Glove,trainY)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
