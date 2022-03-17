@@ -252,7 +252,11 @@ for word, i in word_index.items():
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
 embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
-model = Conv1D(128, 5,activation='relu')(embedding_layer)
+model = Conv1D(256, 7,activation='relu')(embedding_layer)
+model = MaxPooling1D(2)(model)
+model = Conv1D(128, 5,activation='relu')(model)
+model = MaxPooling1D(2)(model)
+model = Conv1D(64, 5,activation='relu')(model)
 model = MaxPooling1D(2)(model)
 model = LSTM(32)(model)
 model = Dense(1,activation='sigmoid')(model)
