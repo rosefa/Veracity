@@ -272,4 +272,4 @@ history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glov
 df_and_nn_model.compile(metrics=["accuracy"])
 df_and_nn_model.fit(myData_train_Glove,trainY)
 plot_graphs(history, 'accuracy')
-plot_graphs(history, 'loss')
+plot_graphs(history, 'loss')'''
