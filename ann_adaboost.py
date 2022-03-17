@@ -224,7 +224,8 @@ testY = myData_test['labels']
 testX = data_test['text']
 trainY = data_train['label']
 testY = data_test['label']'''
-trainX = [text_prepare(x) for x in trainX]
+print(trainX[0])
+'''trainX = [text_prepare(x) for x in trainX]
 testX = [text_prepare(x) for x in testX]
 myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(trainX,testX)
 #train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(myData_train, label="labels")
@@ -232,7 +233,7 @@ myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_mode
 #trainX = [text_prepare(x) for x in data_train['text']]
 #testX = [text_prepare(x) for x in data_test['text']]
 
-print('pretraitement termine !!!')  
+print('pretraitement termine !!!')  '''
 
 '''embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
 embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
@@ -245,7 +246,7 @@ model = builModel()
 model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)'''
 '''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
 
-optimizer = tf.keras.optimizers.Adam()
+'''optimizer = tf.keras.optimizers.Adam()
 input = Input(shape=(300,), dtype='int32')
 embedding_matrix = np.random.random((len(word_index)+1, 100))
 for word, i in word_index.items():
@@ -254,14 +255,14 @@ for word, i in word_index.items():
         embedding_matrix[i] = embedding_vector
 embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
 model = Conv1D(128, 5,activation='relu')(embedding_layer)
-model = MaxPooling1D(2)(model)
-model = Conv1D(100, 3,activation='relu')(model)
-model = MaxPooling1D(2)(model)
-lastLayer = LSTM(100)(model)
+model = MaxPooling1D()(model)
+#model = Conv1D(100, 3,activation='relu')(model)
+#model = MaxPooling1D(2)(model)
+lastLayer = LSTM(32)(model)
 outputLayer = Dense(1,activation='sigmoid')(lastLayer)
 model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
 nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
-df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num_trees=100)
+df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num_trees=500)
 #model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
 #model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
@@ -270,8 +271,5 @@ model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
 df_and_nn_model.compile(metrics=["accuracy"])
 df_and_nn_model.fit(myData_train_Glove,trainY)
-evaluation = df_and_nn_model.evaluate(myData_test_Glove, testY)
-print(f"BinaryCrossentropyloss: {evaluation[0]}")
-print(f"Accuracy: {evaluation[1]}")
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
