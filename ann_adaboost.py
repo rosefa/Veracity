@@ -236,9 +236,9 @@ tokenizer = nlp.tokenizer
 RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)|(RT)"
 ps = PorterStemmer()
 for sentence in seg.segment(testp):
-  filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
+  #filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
   filtered_sentenceNew = []
-  for word in filtered_sentence :
+  for word in [token.text for token in tokenizer(sentence)] :
     match = re.search(RE, word)
     if match == None:
       filtered_sentenceNew.append(word)
@@ -248,8 +248,9 @@ for sentence in seg.segment(testp):
   for word in tokens_tag : 
     if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
       sentenceTag.append(word[0])
+  filtered_sentence = [word for word in sentenceTag if word.lower() not in stopwords.words('english')]
   stems = []
-  for word in sentenceTag:
+  for word in filtered_sentence:
       stem = ps.stem(word)
       stems.append(stem)
   print(stems)
