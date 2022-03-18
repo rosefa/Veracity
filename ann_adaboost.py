@@ -240,7 +240,7 @@ for sentence in seg.segment(testp):
     match = re.search(RE, word)
     if match == None:
       filtered_sentenceNew.append(word)
-   print(filtered_sentenceNew)
+  print(filtered_sentenceNew)
     #re.sub(RE, '', filtered_words)'''
   
   #print ([token.text for token in tokenizer(words)])
