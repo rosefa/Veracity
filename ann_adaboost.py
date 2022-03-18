@@ -49,7 +49,7 @@ from keras.utils.vis_utils import plot_model
 import tensorflow_hub as hub
 import statistics
 import unicodedata
-from nltk import word_tokenize, sent_tokenize
+from nltk import word_tokenize, sent_tokenize, pos_tag
 from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer,PorterStemmer
 from sklearn.preprocessing import LabelEncoder
@@ -245,8 +245,13 @@ for sentence in seg.segment(testp):
   for word in filtered_sentenceNew:
       stem = ps.stem(word)
       stems.append(stem)
-  print(stems)
-    
+  #print(stems)
+  tokens_tag = pos_tag(stems)
+  sentenceTag = []
+  for word in tokens_tag : 
+    if word[1] in ["NNP","JJ","VB"]:
+      sentenceTag.append(word[0])
+  print(sentenceTag)
 '''trainX = data_train['text']
 testX = data_test['text']
 trainY = data_train['label']
