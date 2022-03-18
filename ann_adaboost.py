@@ -229,10 +229,27 @@ testp = "(Reuters) - President-elect Donald Trump has chosen former Goldman Sach
 #seg = pysbd.Segmenter(language="en", clean=False)
 #print(seg.segment(testp))
 nlp = English()
-tokenizer = nlp.tokenizer
-for words in tokenizer.pipe(testp):
-  print (words)
-
+#tokenizer = nlp.tokenizer
+'''for words in tokenizer.pipe(testp):
+  print (words)'''
+def transform(self, data):
+        tokenizer = Tokenizer(nlp.vocab)
+        return np.array(
+            [
+                np.mean(
+                    [
+                        self.model[w.text.lower()]
+                        for w in words
+                        if w.text.lower() in self.model
+                    ]
+                    or [np.zeros(self.dim)],
+                    axis=0,
+                )
+                for words in tokenizer.pipe(data)
+            ]
+        ) 
+ts = transform(self, testp)
+print(ts)
 #print(ts)
 #doc = nlp(testp)
 #print(list(doc.sents))
