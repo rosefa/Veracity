@@ -1,5 +1,5 @@
 import spacy
-from pysbd
+import pysbd
 import tensorflow_decision_forests as tfdf
 from keras.layers.normalization.batch_normalization import BatchNormalization
 import wget
