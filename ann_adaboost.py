@@ -51,7 +51,7 @@ import statistics
 import unicodedata
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import LancasterStemmer, WordNetLemmatizer
+from nltk.stem import LancasterStemmer, WordNetLemmatizer,PorterStemmer
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 
@@ -232,7 +232,7 @@ seg = pysbd.Segmenter(language="en", clean=False)
 nlp = English()
 tokenizer = nlp.tokenizer
 RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)|(RT)"
-stemmer = LancasterStemmer()
+ps = PorterStemmer()
 for sentence in seg.segment(testp):
   filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
   #re.sub(RE, '', word for word in filtered_words)
@@ -243,7 +243,7 @@ for sentence in seg.segment(testp):
       filtered_sentenceNew.append(word)
   stems = []
   for word in filtered_sentenceNew:
-      stem = stemmer.stem(word)
+      stem = ps.stem(word)
       stems.append(stem)
   print(stems)
     
