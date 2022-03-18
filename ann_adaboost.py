@@ -55,6 +55,7 @@ from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 
+
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
 dataf2 = pd.read_csv('Pasvrai-2.csv', encoding= 'unicode_escape')
 dataf3 = pd.read_csv('Pasvrai-3.csv', encoding= 'unicode_escape')
@@ -231,7 +232,14 @@ seg = pysbd.Segmenter(language="en", clean=False)
 nlp = English()
 tokenizer = nlp.tokenizer
 for words in seg.segment(testp):
-  print ([token.text for token in tokenizer(words)])
+  filtered_words = [word for word in [token.text for token in tokenizer(words)] if word not in stopwords.words('english')]
+  print(filtered_words)
+  #print ([token.text for token in tokenizer(words)])
+#RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)\(RT)"
+#match = re.search(RE, string)
+#if match:
+    #process(match)
+
 
 #print(ts)
 #doc = nlp(testp)
