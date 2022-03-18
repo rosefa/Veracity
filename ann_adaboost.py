@@ -232,6 +232,7 @@ seg = pysbd.Segmenter(language="en", clean=False)
 nlp = English()
 tokenizer = nlp.tokenizer
 RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)|(RT)"
+stemmer = LancasterStemmer()
 for sentence in seg.segment(testp):
   filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
   #re.sub(RE, '', word for word in filtered_words)
@@ -240,14 +241,12 @@ for sentence in seg.segment(testp):
     match = re.search(RE, word)
     if match == None:
       filtered_sentenceNew.append(word)
-  print(filtered_sentenceNew)
-    #re.sub(RE, '', filtered_words)'''
-  
-  #print ([token.text for token in tokenizer(words)])
-
-#print(ts)
-#doc = nlp(testp)
-#print(list(doc.sents))
+  stems = []
+  for word in filtered_sentenceNew:
+      stem = stemmer.stem(word)
+      stems.append(stem)
+  print(stems)
+    
 '''trainX = data_train['text']
 testX = data_test['text']
 trainY = data_train['label']
