@@ -237,22 +237,21 @@ RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)|(RT)"
 ps = PorterStemmer()
 for sentence in seg.segment(testp):
   filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
-  #re.sub(RE, '', word for word in filtered_words)
   filtered_sentenceNew = []
   for word in filtered_sentence :
     match = re.search(RE, word)
     if match == None:
       filtered_sentenceNew.append(word)
   stems = []
-  for word in filtered_sentenceNew:
+  '''for word in filtered_sentenceNew:
       stem = ps.stem(word)
-      stems.append(stem)
+      stems.append(stem)'''
   #print(stems)
-  tokens_tag = pos_tag(stems)
+  tokens_tag = pos_tag(filtered_sentenceNew)
   sentenceTag = []
   for word in tokens_tag : 
-    if word[1] in ["NNP","JJ","VB"]:
-      sentenceTag.append(word[0])
+    if word[1] in ["NNP","JJ","VB"] AND len(word[0])>2 :
+      sentenceTag.append(word)
   print(sentenceTag)
 '''trainX = data_train['text']
 testX = data_test['text']
