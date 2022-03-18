@@ -232,7 +232,7 @@ seg = pysbd.Segmenter(language="en", clean=False)
 nlp = English()
 tokenizer = nlp.tokenizer
 for words in seg.segment(testp):
-  filtered_words = [word for word in [token.text for token in tokenizer(words)] if word not in stopwords.words('english')]
+  filtered_words = [word for word in [token.text for token in tokenizer(words)] if word.lower() not in stopwords.words('english')]
   print(filtered_words)
   #print ([token.text for token in tokenizer(words)])
 #RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)\(RT)"
