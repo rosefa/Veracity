@@ -236,9 +236,10 @@ for words in seg.segment(testp):
   filtered_words = [word for word in [token.text for token in tokenizer(words)] if word.lower() not in stopwords.words('english')]
   re.sub(RE, '', filtered_words)
   match = re.search(RE, filtered_words)
-  if match:
-    #re.sub(RE, '', filtered_words)
   print(filtered_words)
+  '''if match:
+    #re.sub(RE, '', filtered_words)'''
+  
   #print ([token.text for token in tokenizer(words)])
 
 #print(ts)
