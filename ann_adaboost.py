@@ -226,30 +226,13 @@ trainY = myData_train['labels']
 testY = myData_test['labels']
 language="en"
 testp = "(Reuters) - President-elect Donald Trump has chosen former Goldman Sachs partner and Hollywood financier Steven Mnuchin as his nominee for Treasury secretary and billionaire investor Wilbur Ross to head the Commerce Department, the two men told CNBC on Wednesday.    The following is a list of Republican Trumpâ€™s selections for top jobs in his administration: Mnuchin, 53, is a relatively little-known but successful private equity investor, hedge fund manager and Hollywood financier who spent 17 years at Goldman Sachs (GS.N) before leaving in 2002. He assembled an investor group to buy a failed California mortgage lender in 2009, rebranded it as OneWest Bank and built it into Southern Californiaâ€™s largest bank. The bank came under fire for its foreclosure practices as housing advocacy groups accused it of being too quick to foreclose on struggling homeowners. Ross, 78, heads the private equity firm W.L. Ross & Co. His net worth was pegged by Forbes at about $2.9 billion. A staunch supporter of Trump and an economic adviser, Ross has helped shape the Trump campaignâ€™s views on trade policy. He blames the North American Free Trade Agreement with Canada and Mexico, which entered into force in 1994, and the 2001 entry of China into the World Trade Organization for causing massive U.S. factory job losses. Chao, 63, was labor secretary under President George W. Bush for eight years and the first Asian-American woman to hold a Cabinet position. Chao is a director at Ingersoll Rand, News Corp and Vulcan Materials Company. She is married to U.S. Senate Majority Leader Mitch McConnell, a Republican from Kentucky. HEALTH AND HUMAN SERVICES SECRETARY: U.S. REPRESENTATIVE TOM PRICE Price, 62, is an orthopedic surgeon who heads the House of Representativesâ€™ Budget Committee. A representative from Georgia since 2005, Price has criticized Obamacare and has championed a plan of tax credits, expanded health savings accounts and lawsuit reforms to replace it. He is opposed to abortion. U.S. AMBASSADOR TO THE UNITED NATIONS: GOVERNOR NIKKI HALEY Haley, a 44-year-old Republican, has been governor of South Carolina since 2011 and has little experience in foreign policy or the federal government. The daughter of Indian immigrants, Haley led a successful push last year to remove the Confederate battle flag from the grounds of the South Carolina state capitol after the killing of nine black churchgoers in Charleston by a white gunman. DeVos, 58, is a billionaire Republican donor, a former chair of the Michigan Republican Party and an advocate for the privatization of education. As chair of the American Federation for Children, she has pushed at the state level for vouchers that families can use to send their children to private schools and for the expansion of charter schools. [L1N1DO0KC] Sessions, 69, was the first U.S. senator to endorse Trumpâ€™s presidential bid and has been a close ally since. The son of a country-store owner, the senator from Alabama and former federal prosecutor has long taken a tough stance on illegal immigration, opposing any path to citizenship for undocumented immigrants.  NATIONAL SECURITY ADVISER: RETIRED LIEUTENANT GENERAL MICHAEL FLYNN Flynn, 57, was an early supporter of Trump and serves as vice chairman on his transition team. He began his U.S. Army career in 1981 and served deployments in Afghanistan and Iraq. Flynn became head of the Defense Intelligence Agency in 2012 under President Barack Obama, but retired a year earlier than expected, according to media reports, and became a fierce critic of Obamaâ€™s foreign policy. Pompeo, 52, is a third-term congressman from Kansas who serves on the House of Representatives Intelligence Committee, which oversees the CIA, National Security Agency and cyber security. A retired Army officer and Harvard Law School graduate, Pompeo supports the U.S. governmentâ€™s sweeping collection of Americansâ€™ communications data and wants to scrap the nuclear deal with Iran.     "
-#seg = pysbd.Segmenter(language="en", clean=False)
+seg = pysbd.Segmenter(language="en", clean=False)
 #print(seg.segment(testp))
 nlp = English()
-#tokenizer = nlp.tokenizer
-'''for words in tokenizer.pipe(testp):
-  print (words)'''
-def transform(self, data):
-        tokenizer = Tokenizer(nlp.vocab)
-        return np.array(
-            [
-                np.mean(
-                    [
-                        self.model[w.text.lower()]
-                        for w in words
-                        if w.text.lower() in self.model
-                    ]
-                    or [np.zeros(self.dim)],
-                    axis=0,
-                )
-                for words in tokenizer.pipe(data)
-            ]
-        ) 
-ts = transform(self, testp)
-print(ts)
+tokenizer = nlp.tokenizer
+for words in seg.segment(testp):
+  print ([token.text for token in tokenizer(words)])
+
 #print(ts)
 #doc = nlp(testp)
 #print(list(doc.sents))
