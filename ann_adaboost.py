@@ -242,17 +242,17 @@ for sentence in seg.segment(testp):
     match = re.search(RE, word)
     if match == None:
       filtered_sentenceNew.append(word)
-  stems = []
-  '''for word in filtered_sentenceNew:
-      stem = ps.stem(word)
-      stems.append(stem)'''
   #print(stems)
   tokens_tag = pos_tag(filtered_sentenceNew)
   sentenceTag = []
   for word in tokens_tag : 
     if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
-      sentenceTag.append(word)
-  print(sentenceTag)
+      sentenceTag.append(word[0])
+  stems = []
+  for word in sentenceTag:
+      stem = ps.stem(word)
+      stems.append(stem)
+  print(stems)
 '''trainX = data_train['text']
 testX = data_test['text']
 trainY = data_train['label']
