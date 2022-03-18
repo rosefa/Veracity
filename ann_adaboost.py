@@ -6,6 +6,7 @@ import tensorflow_decision_forests as tfdf
 from keras.layers.normalization.batch_normalization import BatchNormalization
 import wget
 #nltk.download('omw-1.4')
+import nltk
 from numpy import asarray
 from numpy import zeros
 from sklearn.preprocessing import LabelEncoder
@@ -54,6 +55,7 @@ from nltk.corpus import stopwords
 from nltk.stem import LancasterStemmer, WordNetLemmatizer,PorterStemmer
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
+nltk.download('averaged_perceptron_tagger')
 
 
 dataf1 = pd.read_csv('Pasvrai-1.csv', encoding= 'unicode_escape')
