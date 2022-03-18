@@ -238,9 +238,9 @@ for sentence in seg.segment(testp):
   filtered_sentenceNew = []
   for word in filtered_sentence :
     match = re.search(RE, word)
-    if match:
+    if match == None:
       filtered_sentenceNew.append(word)
-  print(filtered_sentenceNew)
+   print(filtered_sentenceNew)
     #re.sub(RE, '', filtered_words)'''
   
   #print ([token.text for token in tokenizer(words)])
