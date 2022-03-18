@@ -230,8 +230,10 @@ testp = "(Reuters) - President-elect Donald Trump has chosen former Goldman Sach
 #print(seg.segment(testp))
 nlp = English()
 tokenizer = nlp.tokenizer
-ts = np.array[words for words in tokenizer.pipe(testp)]
-print(ts)
+for words in tokenizer.pipe(testp):
+  print (words)
+
+#print(ts)
 #doc = nlp(testp)
 #print(list(doc.sents))
 '''trainX = data_train['text']
