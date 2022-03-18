@@ -250,7 +250,7 @@ for sentence in seg.segment(testp):
   tokens_tag = pos_tag(filtered_sentenceNew)
   sentenceTag = []
   for word in tokens_tag : 
-    if word[1] in ["NNP","JJ","VB"] AND len(word[0])>2 :
+    if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
       sentenceTag.append(word)
   print(sentenceTag)
 '''trainX = data_train['text']
