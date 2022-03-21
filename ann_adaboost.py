@@ -322,7 +322,7 @@ Y = dataTest['labels']
 for train, test in kfold.split(X,Y):
   myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(X[train],X[test])
   # create model
-	input = Input(shape=(300,), dtype='int32')
+  input = Input(shape=(300,), dtype='int32')
   embedding_matrix = np.random.random((len(word_index)+1, 100))
   for word, i in word_index.items():
       embedding_vector = embeddings_dict.get(word)
@@ -336,12 +336,12 @@ for train, test in kfold.split(X,Y):
   lastLayer = LSTM(32)(model)
   outputLayer = Dense(1,activation='sigmoid')(lastLayer)
   model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
-	# Compile model
-	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-	# Fit the model
-	model.fit(myData_train_Glove, Y[train], epochs=10, batch_size=64, verbose=0)
-	# evaluate the model
-	scores = model.evaluate(myData_test_Glove, Y[test], verbose=0)
-	print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
-	cvscores.append(scores[1] * 100)
+# Compile model
+  model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+# Fit the model
+  model.fit(myData_train_Glove, Y[train], epochs=10, batch_size=64, verbose=0)
+# evaluate the model
+  scores = model.evaluate(myData_test_Glove, Y[test], verbose=0)
+  print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+  cvscores.append(scores[1] * 100)
 print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
