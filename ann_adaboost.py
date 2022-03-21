@@ -243,15 +243,13 @@ def preprocessing(mitext):
     #filtered_sentence = [word for word in [token.text for token in tokenizer(sentence)] if word.lower() not in stopwords.words('english')]
     filtered_sentenceNew = []
     for word in [token.text for token in tokenizer(sentence)] :
-      
       if word.isdigit():
-          new_word = p.number_to_words(word)
-          
+          new_word = p.number_to_words(word)    
       else:
-          new_words = word
-      match = re.search(RE, new_words)
+          new_word = word
+      match = re.search(RE, new_word)
       if match == None:
-      filtered_sentenceNew.append(new_words)
+        filtered_sentenceNew.append(new_word)
     #print(stems)
     tokens_tag = pos_tag(filtered_sentenceNew)
     sentenceTag = []
