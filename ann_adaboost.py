@@ -250,7 +250,7 @@ def preprocessing(mitext):
     for word in tokens_tag : 
       if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
         sentenceTag.append(word[0])
-    filtered_sentence = [word for word in sentenceTag if word.lower() not in stopwords.words('english')]
+    filtered_sentence = [word for word in filtered_sentenceNew if word.lower() not in stopwords.words('english')]
     stems = []
     for word in filtered_sentence:
         stem = ps.stem(word)
@@ -377,4 +377,4 @@ for train, test in kfold.split(X,Y):
   scores = model.evaluate(x_test, y_test, verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
-#print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
+print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
