@@ -315,7 +315,7 @@ history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glov
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')'''
 '''**************CROSS VALIDATION********************'''
-kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=7)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
@@ -344,4 +344,4 @@ for train, test in kfold.split(X,Y):
   scores = model.evaluate(myData_test_Glove, Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
-print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
+#print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
