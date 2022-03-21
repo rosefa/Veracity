@@ -319,48 +319,62 @@ kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
-X = [preprocessing(x) for x in X]
-tokenizer = Tokenizer(num_words=75000)
-tokenizer.fit_on_texts(X)
-word_index = tokenizer.word_index
-embeddings_dict = {}
-f = open("glove.6B.100d.txt", encoding="utf8")
-for line in f:
-    values = line.split()
-    word = values[0]
-    try:
-        coefs = np.asarray(values[1:], dtype='float32')
-    except:
-        pass
-    embeddings_dict[word] = coefs
+Xpre = [preprocessing(x) for x in X]
+vectorizer = TextVectorization(max_tokens=75000, output_sequence_length=300) 
+vectorizer.adapt(Xpre)
+voc = vectorizer.get_vocabulary()
+word_index = dict(zip(voc, range(len(voc))))
+embeddings_index = {}
+with open("glove.6B.100d.txt") as f:
+    for line in f:
+        word, coefs = line.split(maxsplit=1)
+        coefs = np.fromstring(coefs, "f", sep=" ")
+        embeddings_index[word] = coefs
+
+num_tokens = len(voc) + 2
+embedding_dim = 100
+hits = 0
+misses = 0
+
+# Prepare embedding matrix
+embedding_matrix = np.zeros((num_tokens, embedding_dim))
+for word, i in word_index.items():
+    embedding_vector = embeddings_index.get(word)
+    if embedding_vector is not None:
+        # Words not found in embedding index will be all-zeros.
+        # This includes the representation for "padding" and "OOV"
+        embedding_matrix[i] = embedding_vector
+        hits += 1
+    else:
+        misses += 1
+
+embedding_layer = Embedding(
+    num_tokens,
+    embedding_dim,
+    embeddings_initializer=keras.initializers.Constant(embedding_matrix),
+    trainable=False,
+)
 for train, test in kfold.split(X,Y):
-  sequencesTrain = tokenizer.texts_to_sequences(X[train])
-  sequencesTest = tokenizer.texts_to_sequences(X[test])
-  #word_index = tokenizer.word_index
-  textTrain = pad_sequences(sequencesTrain, maxlen=300)
-  textTest = pad_sequences(sequencesTest, maxlen=300)
-  #myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(X[train],X[test])
   # create model
-  input = Input(shape=(300,), dtype='int32')
-  embedding_matrix = np.random.random((len(word_index)+1, 100))
-  for word, i in word_index.items():
-      embedding_vector = embeddings_dict.get(word)
-      if embedding_vector is not None:
-          embedding_matrix[i] = embedding_vector
-  embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
-  model = Conv1D(128, 5,activation='relu')(embedding_layer)
+  int_sequences_input = keras.Input(shape=(None,), dtype="int64")
+  embedded_sequences = embedding_layer(int_sequences_input)
+  
+  model = Conv1D(128, 5,activation='relu')(embedded_sequences)
   model = MaxPooling1D(2)(model)
-  #model = Conv1D(100, 3,activation='relu')(model)
-  #model = MaxPooling1D(2)(model)
-  lastLayer = LSTM(32)(model)
-  outputLayer = Dense(1,activation='sigmoid')(lastLayer)
-  model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
+  model = LSTM(32)(model)
+  outputLayer = Dense(1,activation='sigmoid')(model)
+  model = tf.keras.models.Model(int_sequences_input,outputLayer)
 # Compile model
+  x_train = vectorizer(np.array([[s] for s in X[train]])).numpy()
+  x_test = vectorizer(np.array([[s] for s in X[test]])).numpy()
+
+  y_train = np.array(Y[train])
+  y_test = np.array(Y[test])
   model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  model.fit(textTrain, Y[train], epochs=10, batch_size=64, verbose=0)
+  model.fit(x_train, y_train, epochs=10, batch_size=64, verbose=0)
 # evaluate the model
-  scores = model.evaluate(textTest, Y[test], verbose=0)
+  scores = model.evaluate(x_test, y_test, verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
 #print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
