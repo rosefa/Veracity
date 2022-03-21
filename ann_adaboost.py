@@ -221,7 +221,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
 
 
 #data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-dataTest = 
+
 myData_train, myData_test = train_test_split(dataTest, test_size=0.2,shuffle=True)
 
 trainX = myData_train['article_content']
