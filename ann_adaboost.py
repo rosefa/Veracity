@@ -197,7 +197,7 @@ def plot_graphs(history, string):
   plt.show()
   
 def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
-    np.random.seed(7)
+    #np.random.seed(7)
     text = np.concatenate((train,test), axis=0)
     tokenizer = Tokenizer(num_words=75000)
     tokenizer.fit_on_texts(text)
@@ -320,8 +320,26 @@ cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
 X = [preprocessing(x) for x in X]
+tokenizer = Tokenizer(num_words=75000)
+tokenizer.fit_on_texts(X)
+word_index = tokenizer.word_index
+embeddings_dict = {}
+f = open("glove.6B.100d.txt", encoding="utf8")
+for line in f:
+    values = line.split()
+    word = values[0]
+    try:
+        coefs = np.asarray(values[1:], dtype='float32')
+    except:
+        pass
+    embeddings_dict[word] = coefs
 for train, test in kfold.split(X,Y):
-  myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(X[train],X[test])
+  sequencesTrain = tokenizer.texts_to_sequences(X[train])
+  sequencesTest = tokenizer.texts_to_sequences(X[test])
+  #word_index = tokenizer.word_index
+  textTrain = pad_sequences(sequencesTrain, maxlen=300)
+  textTest = pad_sequences(sequencesTest, maxlen=300)
+  #myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(X[train],X[test])
   # create model
   input = Input(shape=(300,), dtype='int32')
   embedding_matrix = np.random.random((len(word_index)+1, 100))
