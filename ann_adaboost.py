@@ -315,10 +315,11 @@ history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glov
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')'''
 '''**************CROSS VALIDATION********************'''
-kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=7)
+kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
+X = [preprocessing(x) for x in X]
 for train, test in kfold.split(X,Y):
   myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(X[train],X[test])
   # create model
