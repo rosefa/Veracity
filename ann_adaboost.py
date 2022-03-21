@@ -248,7 +248,8 @@ def preprocessing(mitext):
       else:
           new_word = word
       match = re.search(RE, new_word)
-      if match == None:
+      capital = new_word.title()
+      if match == None or new_word == capital:
         filtered_sentenceNew.append(new_word)
     #print(stems)
     tokens_tag = pos_tag(filtered_sentenceNew)
