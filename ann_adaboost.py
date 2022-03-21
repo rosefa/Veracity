@@ -257,6 +257,9 @@ def preprocessing(mitext):
     for word in tokens_tag : 
       if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
         sentenceTag.append(word[0])
+    #chunkGram = r"""Chunk: {<NNP>+<VB.?>*<JJ.?>*}"""
+    #chunkParser = nltk.RegexpParser(chunkGram)
+    #chunked = chunkParser.parse(sentenceTag)
     filtered_sentence = [word for word in sentenceTag if word.lower() not in stopwords.words('english')]
     stems = []
     for word in filtered_sentence:
@@ -379,9 +382,11 @@ for train, test in kfold.split(X,Y):
   y_test = np.array(Y[test])
   model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  model.fit(x_train, y_train, epochs=10, batch_size=64, verbose=0)
+  history=model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=10, batch_size=64, verbose=0)
 # evaluate the model
   scores = model.evaluate(x_test, y_test, verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
+  plot_graphs(history, 'accuracy')
+  plot_graphs(history, 'loss')
 print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
