@@ -296,7 +296,7 @@ for word, i in word_index.items():
         embedding_matrix[i] = embedding_vector
 embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
 model = Conv1D(128, 5,activation='relu')(embedding_layer)
-model = MaxPooling1D()(model)
+model = MaxPooling1D(2)(model)
 #model = Conv1D(100, 3,activation='relu')(model)
 #model = MaxPooling1D(2)(model)
 lastLayer = LSTM(32)(model)
@@ -310,7 +310,7 @@ df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num
 #df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
 model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
 history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
-df_and_nn_model.compile(metrics=["accuracy"])
-df_and_nn_model.fit(myData_train_Glove,trainY)
+#df_and_nn_model.compile(metrics=["accuracy"])
+#df_and_nn_model.fit(myData_train_Glove,trainY)
 plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
