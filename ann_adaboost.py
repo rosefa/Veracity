@@ -358,9 +358,9 @@ for train, test in kfold.split(X,Y):
 # Compile model
   model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  model.fit(myData_train_Glove, Y[train], epochs=10, batch_size=64, verbose=0)
+  model.fit(textTrain, Y[train], epochs=10, batch_size=64, verbose=0)
 # evaluate the model
-  scores = model.evaluate(myData_test_Glove, Y[test], verbose=0)
+  scores = model.evaluate(textTest, Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
 #print("%.2f%% (+/- %.2f%%)" % (numpy.mean(cvscores), numpy.std(cvscores)))
