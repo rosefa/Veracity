@@ -23,6 +23,7 @@ dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 data =dataTest['article_content']
 #print (data)
 def preprocessing(data):
+  ligne =[]
   p = inflect.engine()
   seg = pysbd.Segmenter(language="en", clean=False)
   nlp = English()
@@ -55,10 +56,9 @@ def preprocessing(data):
       text = ' '.join([x for x in stems])
       mitext = mitext+text+' '
     i=i+1
-    print(i)
-    print (mitext)
-    
-      
-      
-        
-preprocessing(data)
+    #print(i)
+    ligne.append(mitext)
+    #print (mitext)
+  return ligne
+              
+print(preprocessing(data))
