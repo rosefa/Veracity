@@ -52,8 +52,9 @@ def preprocessing(data):
             stem = ps.stem(word)
             stems.append(stem)
         text = ' '.join([x for x in stems])
+        print(text)
         mitext2 = mitext2+text
-        print(mitext2)
+        
       #ligne.append(mitext2)
        
   #return ligne
