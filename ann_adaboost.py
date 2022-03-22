@@ -218,6 +218,6 @@ for train, test in kfold.split(myData_Glove,Y):
   scores = model.evaluate(myData_Glove[test], Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
-  plot_graphs(history, 'accuracy')
-  plot_graphs(history, 'loss')
+  #plot_graphs(history, 'accuracy')
+  #plot_graphs(history, 'loss')
 print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
