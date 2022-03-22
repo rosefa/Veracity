@@ -20,6 +20,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+data =dataTest['article_content']
 def preprocessing(data):
   p = inflect.engine()
   language="en"
@@ -56,4 +57,4 @@ def preprocessing(data):
       ligne.append(mitext2)
        
   #return ligne
-print(preprocessing(dataTest))
+print(preprocessing(data))
