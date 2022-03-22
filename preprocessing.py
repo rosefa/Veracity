@@ -36,6 +36,8 @@ def preprocessing(data):
     for sentence in seg.segment(sentences):
       filtered_sentence = []
       for word in [token.text for token in tokenizer(sentence)] :
+        if word.isdigit():
+            word = p.number_to_words(word)
         match = re.search(RE, word)
         capital = word.title()
         if match == None or word == capital:
