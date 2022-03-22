@@ -43,7 +43,7 @@ def preprocessing(data):
       tokens_tag = pos_tag(filtered_sentence)
       sentenceTag = []
       for word in tokens_tag : 
-        if word[1] in ["NNP","NNPS","NN","JJ","VB"] and len(word[0])>2 :
+        if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
           sentenceTag.append(word[0])
       filtered_sentenceOtre = [word for word in sentenceTag if word.lower() not in stopwords.words('english')]
       stems = []
@@ -51,9 +51,9 @@ def preprocessing(data):
           stem = ps.stem(word)
           stems.append(stem)
       text = ' '.join([x for x in stems])
-      mitext = mitext+text
+      mitext = mitext+text+' '
     i=i+1  
-    print ('i : '+mitext)
+    print (i+' :'+mitext)
     
       
       
