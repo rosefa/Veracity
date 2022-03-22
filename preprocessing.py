@@ -32,13 +32,14 @@ def preprocessing(data):
   ps = PorterStemmer()
   i=0
   for sentences in data : 
-    mitext = ''
+    #mitext = ''
+    mitext = []
     
     for sentence in seg.segment(sentences):
       filtered_sentence = []
       for word in [token.text for token in tokenizer(sentence)] :
-        if word.isdigit():
-            word = p.number_to_words(word)
+        #if word.isdigit():
+            #word = p.number_to_words(word)
         match = re.search(RE, word)
         capital = word.title()
         if match == None or word == capital:
@@ -46,7 +47,7 @@ def preprocessing(data):
       tokens_tag = pos_tag(filtered_sentence)
       sentenceTag = []
       for word in tokens_tag : 
-        if word[1] in ["NNP","JJ","VB"] and len(word[0])>2 :
+        if word[1] in ["NNP","NN","JJ","VB"] and len(word[0])>2 :
           sentenceTag.append(word[0])
       filtered_sentenceOtre = [word for word in sentenceTag if word.lower() not in stopwords.words('english')]
       stems = []
@@ -54,10 +55,12 @@ def preprocessing(data):
           stem = ps.stem(word)
           stems.append(stem)
       text = ' '.join([x for x in stems])
-      mitext = mitext+text+' '
+      #mitext = mitext+text+' '
+      mitext.append(text)
     i=i+1
     #print(i)
-    ligne.append(mitext)
+    texts = ' '.join([x for x in mitext])
+    ligne.append(texts)
     #print (mitext)
   return ligne
               
