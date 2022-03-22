@@ -53,8 +53,8 @@ def preprocessing(data):
             stems.append(stem)
         text = ' '.join([x for x in stems])
         mitext2 = mitext2+text
-      print(mitext2)
-      ligne.append(mitext2)
+        print(mitext2)
+      #ligne.append(mitext2)
        
   #return ligne
 print(preprocessing(data))
