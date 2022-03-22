@@ -55,7 +55,4 @@ def preprocessing(data):
         print(text)
         mitext2 = mitext2+text
         
-      #ligne.append(mitext2)
-       
-  #return ligne
-print(preprocessing(data))
+preprocessing(data)
