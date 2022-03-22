@@ -1,3 +1,4 @@
+import preprocessing.py as preproces
 import spacy
 import pysbd
 from spacy.tokenizer import Tokenizer
@@ -261,69 +262,14 @@ def preprocessing(mitext):
         stems.append(stem)
     mitext2 = ' '.join([x for x in stems])+ mitext2
   return mitext2
-#testp = "(Reuters) - President-elect Donald Trump has chosen former Goldman Sachs partner and Hollywood financier Steven Mnuchin as his nominee for Treasury secretary and billionaire investor Wilbur Ross to head the Commerce Department, the two men told CNBC on Wednesday.    The following is a list of Republican Trumpâ€™s selections for top jobs in his administration: Mnuchin, 53, is a relatively little-known but successful private equity investor, hedge fund manager and Hollywood financier who spent 17 years at Goldman Sachs (GS.N) before leaving in 2002. He assembled an investor group to buy a failed California mortgage lender in 2009, rebranded it as OneWest Bank and built it into Southern Californiaâ€™s largest bank. The bank came under fire for its foreclosure practices as housing advocacy groups accused it of being too quick to foreclose on struggling homeowners. Ross, 78, heads the private equity firm W.L. Ross & Co. His net worth was pegged by Forbes at about $2.9 billion. A staunch supporter of Trump and an economic adviser, Ross has helped shape the Trump campaignâ€™s views on trade policy. He blames the North American Free Trade Agreement with Canada and Mexico, which entered into force in 1994, and the 2001 entry of China into the World Trade Organization for causing massive U.S. factory job losses. Chao, 63, was labor secretary under President George W. Bush for eight years and the first Asian-American woman to hold a Cabinet position. Chao is a director at Ingersoll Rand, News Corp and Vulcan Materials Company. She is married to U.S. Senate Majority Leader Mitch McConnell, a Republican from Kentucky. HEALTH AND HUMAN SERVICES SECRETARY: U.S. REPRESENTATIVE TOM PRICE Price, 62, is an orthopedic surgeon who heads the House of Representativesâ€™ Budget Committee. A representative from Georgia since 2005, Price has criticized Obamacare and has championed a plan of tax credits, expanded health savings accounts and lawsuit reforms to replace it. He is opposed to abortion. U.S. AMBASSADOR TO THE UNITED NATIONS: GOVERNOR NIKKI HALEY Haley, a 44-year-old Republican, has been governor of South Carolina since 2011 and has little experience in foreign policy or the federal government. The daughter of Indian immigrants, Haley led a successful push last year to remove the Confederate battle flag from the grounds of the South Carolina state capitol after the killing of nine black churchgoers in Charleston by a white gunman. DeVos, 58, is a billionaire Republican donor, a former chair of the Michigan Republican Party and an advocate for the privatization of education. As chair of the American Federation for Children, she has pushed at the state level for vouchers that families can use to send their children to private schools and for the expansion of charter schools. [L1N1DO0KC] Sessions, 69, was the first U.S. senator to endorse Trumpâ€™s presidential bid and has been a close ally since. The son of a country-store owner, the senator from Alabama and former federal prosecutor has long taken a tough stance on illegal immigration, opposing any path to citizenship for undocumented immigrants.  NATIONAL SECURITY ADVISER: RETIRED LIEUTENANT GENERAL MICHAEL FLYNN Flynn, 57, was an early supporter of Trump and serves as vice chairman on his transition team. He began his U.S. Army career in 1981 and served deployments in Afghanistan and Iraq. Flynn became head of the Defense Intelligence Agency in 2012 under President Barack Obama, but retired a year earlier than expected, according to media reports, and became a fierce critic of Obamaâ€™s foreign policy. Pompeo, 52, is a third-term congressman from Kansas who serves on the House of Representatives Intelligence Committee, which oversees the CIA, National Security Agency and cyber security. A retired Army officer and Harvard Law School graduate, Pompeo supports the U.S. governmentâ€™s sweeping collection of Americansâ€™ communications data and wants to scrap the nuclear deal with Iran.     "
-#print(preprocessing(testp))
-testX = [preprocessing(x) for x in testX]
-trainX = [preprocessing(x) for x in trainX]
-'''trainX = data_train['text']
-testX = data_test['text']
-trainY = data_train['label']
-testY = data_test['label']'''
 
-#trainX = [text_prepare(x) for x in trainX]
-#testX = [text_prepare(x) for x in testX]
-myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(trainX,testX)
-#train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(myData_train, label="labels")
-#print(data_test)
-#trainX = [text_prepare(x) for x in data_train['text']]
-#testX = [text_prepare(x) for x in data_test['text']]
-
-print('pretraitement termine !!!')
-
-'''embed = "https://tfhub.dev/google/universal-sentence-encoder/4"
-embeddings_train = hub.KerasLayer(embed,input_shape=[], dtype=tf.string, trainable=True)
-trainX = embeddings_train(trainX)
-testX = embeddings_train(testX)
-embeddings_train = np.array([np.reshape(embed, (len(embed), 1)) for embed in trainX])
-embeddings_test = np.array([np.reshape(embed, (len(embed), 1)) for embed in testX])
-print('le model')
-model = builModel()
-model.fit(embeddings_train,trainY,epochs=10,validation_data=(embeddings_test,testY),batch_size=64,verbose=1)'''
-'''train,test = train_test_split(dataTest,test_size=0.3, shuffle=True)'''
-
-'''optimizer = tf.keras.optimizers.Adam()
-input = Input(shape=(300,), dtype='int32')
-embedding_matrix = np.random.random((len(word_index)+1, 100))
-for word, i in word_index.items():
-    embedding_vector = embeddings_dict.get(word)
-    if embedding_vector is not None:
-        embedding_matrix[i] = embedding_vector
-embedding_layer = Embedding(len(word_index) + 1,100,weights=[embedding_matrix],input_length=300,trainable=True)(input)
-model = Conv1D(128, 5,activation='relu')(embedding_layer)
-model = MaxPooling1D(2)(model)
-#model = Conv1D(100, 3,activation='relu')(model)
-#model = MaxPooling1D(2)(model)
-lastLayer = LSTM(32)(model)
-outputLayer = Dense(1,activation='sigmoid')(lastLayer)
-model = tf.keras.models.Model(inputs=input,outputs=outputLayer)
-nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
-df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num_trees=500)
-#model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
-    
-#model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
-#df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=model)
-model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
-history = model.fit(myData_train_Glove, trainY,validation_data=(myData_test_Glove, testY), epochs=10, batch_size=64, verbose=1)
-#df_and_nn_model.compile(metrics=["accuracy"])
-#df_and_nn_model.fit(myData_train_Glove,trainY)
-plot_graphs(history, 'accuracy')
-plot_graphs(history, 'loss')'''
 '''**************CROSS VALIDATION********************'''
 kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
-Xpre = [preprocessing(x) for x in X]
+Xpre = preprocess.preprocessing(X)
+print(Xpre)
 vectorizer = TextVectorization(max_tokens=75000, output_sequence_length=300) 
 vectorizer.adapt(Xpre)
 voc = vectorizer.get_vocabulary()
@@ -358,7 +304,7 @@ embedding_layer = Embedding(
     embeddings_initializer=keras.initializers.Constant(embedding_matrix),
     trainable=False,
 )
-for train, test in kfold.split(X,Y):
+for train, test in kfold.split(Xpre,Y):
   # create model
   int_sequences_input = keras.Input(shape=(None,), dtype="int64")
   embedded_sequences = embedding_layer(int_sequences_input)
@@ -369,8 +315,8 @@ for train, test in kfold.split(X,Y):
   outputLayer = Dense(1,activation='sigmoid')(model)
   model = tf.keras.models.Model(int_sequences_input,outputLayer)
 # Compile model
-  x_train = vectorizer(np.array([[s] for s in X[train]])).numpy()
-  x_test = vectorizer(np.array([[s] for s in X[test]])).numpy()
+  x_train = vectorizer(np.array([[s] for s in Xpre[train]])).numpy()
+  x_test = vectorizer(np.array([[s] for s in Xpre[test]])).numpy()
 
   y_train = np.array(Y[train])
   y_test = np.array(Y[test])
