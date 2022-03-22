@@ -148,7 +148,15 @@ def plot_graphs(history, string):
   plt.legend([string, 'val_'+string])
   plt.show()
   
-def prepare_model_input():
+def prepare_model_input(X_train, X_test,X,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
+    tokenizer = Tokenizer(num_words=75000)
+    tokenizer.fit_on_texts(X)
+    sequences = tokenizer.texts_to_sequences(X)
+    word_index = tokenizer.word_index
+    sequencesTrain = tokenizer.texts_to_sequences(X_train)
+    sequencesTest = tokenizer.texts_to_sequences(X_test)
+    X_train_Glove = pad_sequences(sequencesTrain, maxlen=300)
+    X_test_Glove = pad_sequences(sequencesTest, maxlen=300)
     embeddings_dict = {}
     f = open("glove.6B.100d.txt", encoding="utf8")
     for line in f:
@@ -160,7 +168,7 @@ def prepare_model_input():
             pass
         embeddings_dict[word] = coefs
     f.close()
-    return (embeddings_dict)
+    return (X_train_Glove, X_test_Glove, word_index, embeddings_dict)
 
 def preprocessing(mitext):
   p = inflect.engine()
@@ -201,21 +209,14 @@ cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
 Xpre = preproces.preprocessing(X)
-tokenizer = Tokenizer(num_words=75000)
-tokenizer.fit_on_texts(Xpre)
-word_index = tokenizer.word_index
 for train, test in kfold.split(Xpre,Y):
-  sequencesTrain = tokenizer.texts_to_sequences(Xpre[train])
-  sequencesTest = tokenizer.texts_to_sequences(Xpre[test])
-  textTrain = pad_sequences(sequencesTrain, maxlen=300)
-  textTest = pad_sequences(sequencesTest, maxlen=300)
-  embeddings_dict=prepare_model_input()
+  myData_train_Glove,myData_test_Glove, word_index, embeddings_dict = prepare_model_input(Xpre[train],Xpre[test],Xpre)
   model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
   #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  history=model.fit(textTrain, Y[train], validation_data=(textTest, Y[test]),epochs=10, batch_size=64, verbose=0)
+  history=model.fit(myData_train_Glove, Y[train], validation_data=(myData_test_Glove, Y[test]),epochs=10, batch_size=64, verbose=0)
 # evaluate the model
-  scores = model.evaluate(textTest, Y[test], verbose=0)
+  scores = model.evaluate(myData_test_Glove, Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
   plot_graphs(history, 'accuracy')
