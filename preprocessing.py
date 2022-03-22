@@ -31,8 +31,9 @@ def preprocessing(data):
   ps = PorterStemmer()
   ligne=[]
   for row in data : 
-    mitext2=''
+    
     for sentences in row : 
+      mitext2=''
       for sentence in seg.segment(sentences):
         filtered_sentence = []
         for word in [token.text for token in tokenizer(sentence)] :
@@ -51,7 +52,8 @@ def preprocessing(data):
             stem = ps.stem(word)
             stems.append(stem)
         text = ' '.join([x for x in stems])
-      mitext2 = mitext2+text
-    ligne.append(mitext2)    
+        mitext2 = mitext2+text
+      ligne.append(mitext2)
+       
   return ligne
 print(preprocessing(dataTest))
