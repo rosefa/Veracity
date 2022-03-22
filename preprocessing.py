@@ -21,7 +21,7 @@ from nltk.stem import PorterStemmer
 
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
 data =dataTest['article_content']
-print (data)
+#print (data)
 def preprocessing(data):
   p = inflect.engine()
   seg = pysbd.Segmenter(language="en", clean=False)
@@ -29,8 +29,10 @@ def preprocessing(data):
   tokenizer = nlp.tokenizer
   RE = "(@[A-Za-z0-9]+)|([^0-9A-Za-z\t])|(\w+:\/\/\S+)|(RT)"
   ps = PorterStemmer()
-  
+  i=0
   for sentences in data : 
+    mitext = ''
+    
     for sentence in seg.segment(sentences):
       filtered_sentence = []
       for word in [token.text for token in tokenizer(sentence)] :
@@ -49,7 +51,11 @@ def preprocessing(data):
           stem = ps.stem(word)
           stems.append(stem)
       text = ' '.join([x for x in stems])
-      print(text)
+      mitext = mitext+text
+    i=i+1  
+    print ('i : '+mitext)
+    
+      
       
         
 preprocessing(data)
