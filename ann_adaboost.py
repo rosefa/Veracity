@@ -148,8 +148,8 @@ def plot_graphs(history, string):
   plt.legend([string, 'val_'+string])
   plt.show()
   
-def prepare_model_input(X,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
-    tokenizer = Tokenizer(num_words=75000)
+def prepare_model_input(X,MAX_NB_WORDS=45000,MAX_SEQUENCE_LENGTH=300):
+    tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
     tokenizer.fit_on_texts(X)
     sequences = tokenizer.texts_to_sequences(X)
     X_Glove = pad_sequences(sequences, maxlen=300)
@@ -213,7 +213,7 @@ for train, test in kfold.split(myData_Glove,Y):
   model = build_bilstm(word_index=word_index, embeddings_dict=embeddings_dict)
   #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  history=model.fit(myData_Glove[train], Y[train], validation_data=(myData_Glove[test], Y[test]),epochs=10, batch_size=64, verbose=0)
+  history=model.fit(myData_Glove[train], Y[train], validation_data=(myData_Glove[test], Y[test]),epochs=10, batch_size=64, verbose=1)
 # evaluate the model
   scores = model.evaluate(myData_Glove[test], Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
