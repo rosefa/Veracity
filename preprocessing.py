@@ -31,7 +31,6 @@ def preprocessing(data):
   ps = PorterStemmer()
   ligne=[]
   for row in data : 
-    
     for sentences in row : 
       mitext2=''
       for sentence in seg.segment(sentences):
@@ -53,7 +52,8 @@ def preprocessing(data):
             stems.append(stem)
         text = ' '.join([x for x in stems])
         mitext2 = mitext2+text
+      print(mitext2)
       ligne.append(mitext2)
        
-  return ligne
+  #return ligne
 print(preprocessing(dataTest))
