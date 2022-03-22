@@ -112,54 +112,7 @@ datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
 #print(list(data.columns))
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-'''************** preprocessing****************'''
-def clean_text(text):
-    
-    replaced_text = re.sub(r'[【】]', ' ', text)
-    replaced_text = re.sub(r'[（）()]', ' ', text)
-    replaced_text = re.sub(r'[［］\[\]]', ' ', text)
-    replaced_text = re.sub(r'[@＠]\w+', '',text)
-    replaced_text = re.sub(r'https?:\/\/.*?[\r\n ]', '', text)
-    return replaced_text 
 
-# Text normalization includes many steps.
-# Each function below serves a step.
-def remove_non_ascii(words):
-    """Remove non-ASCII characters from list of tokenized words"""
-    new_words = []
-    for word in words:
-        new_word = unicodedata.normalize('NFKD', word).encode('ascii', 'ignore').decode('utf-8', 'ignore')
-        new_words.append(new_word)
-    return new_words
-
-def remove_stopwords(words):
-    """Remove stop words from list of tokenized words"""
-    new_words = []
-    for word in words:
-        if word not in stopwords.words('english'):
-            new_words.append(word)
-    return new_words
-
-def stem_words(words):
-    """Stem words in list of tokenized words"""
-    stemmer = LancasterStemmer()
-    stems = []
-    for word in words:
-        stem = stemmer.stem(word)
-        stems.append(stem)
-    return stems
-  
-def normalize_text(words):
-    words = remove_non_ascii(words)
-    words = remove_stopwords(words)
-    words = stem_words(words)
-    return words
-    # Tokenize tweet into words
-def text_prepare(text):
-    mitext = clean_text(text)
-    mitext = ' '.join([x for x in normalize_text(mitext)])
-    return mitext
-  
 def builModel ():
   model = Sequential()
   model.add(layers.Conv1D(128, 5,activation='relu',input_shape=(512, 1)))
@@ -170,9 +123,7 @@ def builModel ():
   return model
 
 def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
-    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     optimizer = tf.keras.optimizers.Adam()
-    #optimizer = tf.keras.optimizers.Adam(learning_rate=0.3)
     input = Input(shape=(300,), dtype='int32')
     embedding_matrix = np.random.random((len(word_index)+1, EMBEDDING_DIM))
     for word, i in word_index.items():
@@ -185,7 +136,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = LSTM(32)(model)
     model = Dense(1,activation='sigmoid')(model)
     model = keras.Model(inputs=input,outputs=model)
-    #model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+    model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy', tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
     return model
     
@@ -197,16 +148,7 @@ def plot_graphs(history, string):
   plt.legend([string, 'val_'+string])
   plt.show()
   
-def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
-    #np.random.seed(7)
-    text = np.concatenate((train,test), axis=0)
-    tokenizer = Tokenizer(num_words=75000)
-    tokenizer.fit_on_texts(text)
-    sequencesTrain = tokenizer.texts_to_sequences(train)
-    sequencesTest = tokenizer.texts_to_sequences(test)
-    word_index = tokenizer.word_index
-    textTrain = pad_sequences(sequencesTrain, maxlen=300)
-    textTest = pad_sequences(sequencesTest, maxlen=300)
+def prepare_model_input():
     embeddings_dict = {}
     f = open("glove.6B.100d.txt", encoding="utf8")
     for line in f:
@@ -218,17 +160,7 @@ def prepare_model_input(train, test,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
             pass
         embeddings_dict[word] = coefs
     f.close()
-    return (textTrain, textTest, word_index, embeddings_dict)
-
-
-#data_train, data_test = train_test_split(data, test_size=0.3,shuffle=True)
-
-myData_train, myData_test = train_test_split(dataTest, test_size=0.2,shuffle=True)
-
-trainX = myData_train['article_content']
-testX = myData_test['article_content']
-trainY = myData_train['labels']
-testY = myData_test['labels']
+    return (embeddings_dict)
 
 def preprocessing(mitext):
   p = inflect.engine()
@@ -269,62 +201,21 @@ cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
 Xpre = preproces.preprocessing(X)
-print(Xpre)
-vectorizer = TextVectorization(max_tokens=75000, output_sequence_length=300) 
-vectorizer.adapt(Xpre)
-voc = vectorizer.get_vocabulary()
-word_index = dict(zip(voc, range(len(voc))))
-embeddings_index = {}
-with open("glove.6B.100d.txt") as f:
-    for line in f:
-        word, coefs = line.split(maxsplit=1)
-        coefs = np.fromstring(coefs, "f", sep=" ")
-        embeddings_index[word] = coefs
-
-num_tokens = len(voc) + 2
-embedding_dim = 100
-hits = 0
-misses = 0
-
-# Prepare embedding matrix
-embedding_matrix = np.zeros((num_tokens, embedding_dim))
-for word, i in word_index.items():
-    embedding_vector = embeddings_index.get(word)
-    if embedding_vector is not None:
-        # Words not found in embedding index will be all-zeros.
-        # This includes the representation for "padding" and "OOV"
-        embedding_matrix[i] = embedding_vector
-        hits += 1
-    else:
-        misses += 1
-
-embedding_layer = Embedding(
-    num_tokens,
-    embedding_dim,
-    embeddings_initializer=keras.initializers.Constant(embedding_matrix),
-    trainable=False,
-)
+tokenizer = Tokenizer(num_words=75000)
+tokenizer.fit_on_texts(Xpre)
+word_index = tokenizer.word_index
 for train, test in kfold.split(Xpre,Y):
-  # create model
-  int_sequences_input = keras.Input(shape=(None,), dtype="int64")
-  embedded_sequences = embedding_layer(int_sequences_input)
-  
-  model = Conv1D(128, 5,activation='relu')(embedded_sequences)
-  model = MaxPooling1D(2)(model)
-  model = LSTM(32)(model)
-  outputLayer = Dense(1,activation='sigmoid')(model)
-  model = tf.keras.models.Model(int_sequences_input,outputLayer)
-# Compile model
-  x_train = vectorizer(np.array([[s] for s in Xpre[train]])).numpy()
-  x_test = vectorizer(np.array([[s] for s in Xpre[test]])).numpy()
-
-  y_train = np.array(Y[train])
-  y_test = np.array(Y[test])
-  model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+  sequencesTrain = tokenizer.texts_to_sequences(Xpre[train])
+  sequencesTest = tokenizer.texts_to_sequences(Xpre[test])
+  textTrain = pad_sequences(sequencesTrain, maxlen=300)
+  textTest = pad_sequences(sequencesTest, maxlen=300)
+  embeddings_dict=prepare_model_input()
+  model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
+  #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 # Fit the model
-  history=model.fit(x_train, y_train, validation_data=(x_test, y_test),epochs=10, batch_size=64, verbose=0)
+  history=model.fit(textTrain, Y[train], validation_data=(textTest, Y[test]),epochs=10, batch_size=64, verbose=0)
 # evaluate the model
-  scores = model.evaluate(x_test, y_test, verbose=0)
+  scores = model.evaluate(textTest, Y[test], verbose=0)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
   cvscores.append(scores[1] * 100)
   plot_graphs(history, 'accuracy')
