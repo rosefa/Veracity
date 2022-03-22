@@ -202,7 +202,7 @@ def preprocessing(mitext):
   return mitext2
 
 '''**************CROSS VALIDATION********************'''
-kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+kfold = StratifiedKFold(n_splits=10, shuffle=True)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
