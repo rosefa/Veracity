@@ -268,7 +268,7 @@ kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
-Xpre = preprocess.preprocessing(X)
+Xpre = preproces.preprocessing(X)
 print(Xpre)
 vectorizer = TextVectorization(max_tokens=75000, output_sequence_length=300) 
 vectorizer.adapt(Xpre)
