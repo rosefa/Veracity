@@ -19,8 +19,8 @@ from nltk import word_tokenize, sent_tokenize, pos_tag
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
-dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-data =dataTest['article_content']
+#dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
+#data =dataTest['article_content']
 #print (data)
 def preprocessing(data):
   ligne =[]
@@ -61,4 +61,3 @@ def preprocessing(data):
     #print (mitext)
   return ligne
               
-print(preprocessing(data))
