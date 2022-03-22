@@ -1,4 +1,4 @@
-import preprocessing.py as preproces
+import preprocessing as preproces
 import spacy
 import pysbd
 from spacy.tokenizer import Tokenizer
