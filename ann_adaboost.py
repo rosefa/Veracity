@@ -215,8 +215,10 @@ for train, test in kfold.split(myData_Glove,Y):
 # Fit the model
   history=model.fit(myData_Glove[train], Y[train], validation_data=(myData_Glove[test], Y[test]),epochs=10, batch_size=64, verbose=0)
 # evaluate the model
-  scores = model.evaluate(myData_Glove[test], Y[test], verbose=0)
+  scores = model.evaluate(myData_Glove[test], Y[test], verbose=1)
   print("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+  print("%s: %.2f%%" % (model.metrics_names[2], scores[2]*100))
+  print("%s: %.2f%%" % (model.metrics_names[3], scores[3]*100))
   cvscores.append(scores[1] * 100)
   plot_graphs(history, 'accuracy')
   plot_graphs(history, 'loss')
