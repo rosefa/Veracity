@@ -112,7 +112,25 @@ datav4['label']=pos
 data = pd.concat([dataf1,dataf2,dataf3,datav1,datav2,datav3,datav4], axis=0)
 #print(list(data.columns))
 dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-
+def prepare_model_input(X,MAX_NB_WORDS=75000,MAX_SEQUENCE_LENGTH=300):
+    tokenizer = Tokenizer(num_words=75000)
+    tokenizer.fit_on_texts(X)
+    sequences = tokenizer.texts_to_sequences(X)
+    X_Glove = pad_sequences(sequences, maxlen=300)
+    word_index = tokenizer.word_index
+    
+    embeddings_dict = {}
+    f = open("glove.6B.100d.txt", encoding="utf8")
+    for line in f:
+        values = line.split()
+        word = values[0]
+        try:
+            coefs = np.asarray(values[1:], dtype='float32')
+        except:
+            pass
+        embeddings_dict[word] = coefs
+    f.close()
+    return (X_Glove, word_index, embeddings_dict)
 def plot_graphs(history, string):
   plt.plot(history.history[string])
   plt.plot(history.history['val_'+string], '')
