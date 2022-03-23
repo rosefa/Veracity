@@ -98,7 +98,7 @@ def cnn_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_D
   model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy', tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
   return model
   
- def cnn_mtl(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100):
+def cnn_mtl(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING_DIM=100) :
   optimizer = tf.keras.optimizers.Adam()
   input = Input(shape=(300,), dtype='int32')
   embedding_matrix = np.random.random((len(word_index)+1, EMBEDDING_DIM))
