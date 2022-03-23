@@ -18,10 +18,27 @@ import unicodedata
 from nltk import word_tokenize, sent_tokenize, pos_tag
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+import tensorflow_decision_forests as tfdf
+from keras.layers.normalization.batch_normalization import BatchNormalization
+from tensorflow.keras.layers import TextVectorization,Embedding
+from tensorflow.keras import layers
+import tensorflow_decision_forests as tfdf
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Bidirectional,LSTM, GRU,MaxPooling1D, GlobalMaxPool1D, GlobalMaxPooling1D, Dropout,Conv1D,Embedding, Input, Layer
+from tensorflow import keras
+#import tensorflow_decision_forests as tfdf
+from tensorflow.keras import optimizers
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense,Flatten
+from sklearn.ensemble import AdaBoostClassifier,BaggingClassifier,GradientBoostingClassifier
+from sklearn.metrics import accuracy_score
+import tensorflow as tf 
+#import chardet
+from sklearn import preprocessing
+from sklearn import metrics
 
-#dataTest = pd.read_csv('FAKESDataset.csv', encoding= 'unicode_escape')
-#data =dataTest['article_content']
-#print (data)
+
 def preprocessing(data):
   ligne =[]
   p = inflect.engine()
