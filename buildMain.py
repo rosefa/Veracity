@@ -141,7 +141,7 @@ def plot_graphs(history, string):
 
 
 '''**************CROSS VALIDATION********************'''
-kfold = StratifiedKFold(n_splits=5, shuffle=True)
+kfold = StratifiedKFold(n_splits=10, shuffle=True)
 cvscores = []
 X = dataTest['article_content']
 Y = dataTest['labels']
