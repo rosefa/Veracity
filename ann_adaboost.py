@@ -137,6 +137,7 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     lastLayer = Dense(1,activation='sigmoid')(model)
     model = keras.Model(inputs=input,outputs=lastLayer)
     nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
+    df_and_nn_model = tfdf.keras.RandomForestModel(preprocessing=nn_without_head,num_trees=500)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy', tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
     return (model,nn_without_head)
