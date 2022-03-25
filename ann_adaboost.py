@@ -134,11 +134,12 @@ def build_bilstm(word_index, embeddings_dict, MAX_SEQUENCE_LENGTH=300, EMBEDDING
     model = Conv1D(128, 5,activation='relu')(embedding_layer)
     model = MaxPooling1D(2)(model)
     model = LSTM(32)(model)
-    model = Dense(1,activation='sigmoid')(model)
-    model = keras.Model(inputs=input,outputs=model)
+    lastLayer = Dense(1,activation='sigmoid')(model)
+    model = keras.Model(inputs=input,outputs=lastLayer)
+    nn_without_head = tf.keras.models.Model(inputs=model.inputs, outputs=lastLayer)
     model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy', tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
     
-    return model
+    return (model,nn_without_head)
     
 def plot_graphs(history, string):
   plt.plot(history.history[string])
@@ -204,11 +205,26 @@ def preprocessing(mitext):
 '''**************CROSS VALIDATION********************'''
 kfold = StratifiedKFold(n_splits=10, shuffle=True)
 cvscores = []
-X = dataTest['article_content']
-Y = dataTest['labels']
-Xpre = preproces.preprocessing(X)
+train,test = train_test_split(dataTest,test_size=0.2, shuffle=True)
+trainX = train['article_content']
+trainY = train['labels']
+testX = test['article_content']
+testY = test['labels']
+trainX = preproces.preprocessing(trainX)
+testX = preproces.preprocessing(testX)
+Xpre = preproces.preprocessing(dataTest['article_content'])
 myData_Glove,word_index, embeddings_dict = prepare_model_input(Xpre)
-for train, test in kfold.split(myData_Glove,Y):
+myData_Glove_train,word_index_train, embeddings_dict_train = prepare_model_input(trainX)
+myData_Glove_test,word_index_test, embeddings_dict_test = prepare_model_input(testX)
+model,df_and_nn_model = build_bilstm(word_index=word_index, embeddings_dict=embeddings_dict)
+
+#model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=[tf.keras.metrics.BinaryAccuracy(name='accuracy'), tf.keras.metrics.Precision(name='precision'), tf.keras.metrics.Recall(name='rappel')])
+history = model.fit(myData_Glove_train, trainY,validation_data=(myData_Glove_test, testY), epochs=10, batch_size=64, verbose=1)
+df_and_nn_model.compile(metrics=["accuracy"])
+df_and_nn_model.fit(myData_Glove,dataTest['labels'])
+plot_graphs(history, 'accuracy')
+plot_graphs(history, 'loss')
+'''for train, test in kfold.split(myData_Glove,Y):
   #model = KerasClassifier(build_bilstm, word_index=word_index, embeddings_dict=embeddings_dict,verbose=0)
   model = build_bilstm(word_index=word_index, embeddings_dict=embeddings_dict)
   #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -222,4 +238,4 @@ for train, test in kfold.split(myData_Glove,Y):
   cvscores.append(scores[1] * 100)
   plot_graphs(history, 'accuracy')
   plot_graphs(history, 'loss')
-print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
+print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))'''
